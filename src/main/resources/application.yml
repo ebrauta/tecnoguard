@@ -1,0 +1,20 @@
+server:
+  port: 8080
+spring:
+  profiles:
+    active: test
+  application:
+    name: tecnoguard
+  datasource:
+    url: jdbc:h2:mem:tecnoguard;DB_CLOSE_DELAY=1;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
