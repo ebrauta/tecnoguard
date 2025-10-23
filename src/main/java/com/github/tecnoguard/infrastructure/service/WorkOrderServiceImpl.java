@@ -10,11 +10,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-public class WokrOrderServiceImpl implements IWorkService {
+public class WorkOrderServiceImpl implements IWorkService {
 
     private final WorkOrderRepository repo;
 
-    public WokrOrderServiceImpl(WorkOrderRepository repo) {
+    public WorkOrderServiceImpl(WorkOrderRepository repo) {
         this.repo = repo;
     }
 
