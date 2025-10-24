@@ -22,11 +22,10 @@ import java.util.List;
 public class WorkOrderController {
 
     private final IWorkService service;
-    private final WorkOrderMapper mapper;
+    private final WorkOrderMapper mapper = new WorkOrderMapper();
 
-    public WorkOrderController(IWorkService service, WorkOrderMapper mapper) {
+    public WorkOrderController(IWorkService service) {
         this.service = service;
-        this.mapper = mapper;
     }
 
     @Operation(summary = "Listar todas", description = "Lista todas as OS.")
