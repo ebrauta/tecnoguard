@@ -3,7 +3,7 @@ package com.github.tecnoguard.infrastructure.web.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tecnoguard.domain.enums.WOStatus;
 import com.github.tecnoguard.domain.enums.WOType;
-import com.github.tecnoguard.domain.model.WorkOrder;
+import com.github.tecnoguard.domain.models.WorkOrder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

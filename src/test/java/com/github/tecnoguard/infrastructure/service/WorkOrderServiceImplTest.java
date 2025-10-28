@@ -1,7 +1,7 @@
 package com.github.tecnoguard.infrastructure.service;
 
 import com.github.tecnoguard.domain.enums.WOType;
-import com.github.tecnoguard.domain.model.WorkOrder;
+import com.github.tecnoguard.domain.models.WorkOrder;
 import com.github.tecnoguard.domain.service.IWorkService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

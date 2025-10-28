@@ -1,7 +1,7 @@
 package com.github.tecnoguard.infrastructure.service;
 
 import com.github.tecnoguard.core.exceptions.NotFoundException;
-import com.github.tecnoguard.domain.model.WorkOrder;
+import com.github.tecnoguard.domain.models.WorkOrder;
 import com.github.tecnoguard.domain.service.IWorkService;
 import com.github.tecnoguard.infrastructure.persistence.WorkOrderRepository;
 import org.springframework.stereotype.Service;

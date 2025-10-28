@@ -2,7 +2,7 @@ package com.github.tecnoguard.application.mappers.workorder;
 
 import com.github.tecnoguard.application.dtos.workorder.request.CreateWO;
 import com.github.tecnoguard.application.dtos.workorder.response.FullResponseWO;
-import com.github.tecnoguard.domain.model.WorkOrder;
+import com.github.tecnoguard.domain.models.WorkOrder;
 
 public class WorkOrderMapper {
     public FullResponseWO fromEntityToFullDTO(WorkOrder wo) {

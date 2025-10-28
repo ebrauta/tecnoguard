@@ -1,10 +1,12 @@
-package com.github.tecnoguard.domain.model;
+package com.github.tecnoguard.domain.models;
 
 import com.github.tecnoguard.core.exceptions.BusinessException;
 import com.github.tecnoguard.domain.enums.WOStatus;
 import com.github.tecnoguard.domain.enums.WOType;
 import com.github.tecnoguard.domain.shared.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "tb_workorder")
 @NoArgsConstructor
 @Getter
 public class WorkOrder extends BaseEntity {

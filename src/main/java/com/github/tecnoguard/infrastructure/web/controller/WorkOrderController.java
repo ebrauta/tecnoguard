@@ -6,7 +6,7 @@ import com.github.tecnoguard.application.dtos.workorder.request.CompleteWO;
 import com.github.tecnoguard.application.dtos.workorder.request.CreateWO;
 import com.github.tecnoguard.application.dtos.workorder.response.FullResponseWO;
 import com.github.tecnoguard.application.mappers.workorder.WorkOrderMapper;
-import com.github.tecnoguard.domain.model.WorkOrder;
+import com.github.tecnoguard.domain.models.WorkOrder;
 import com.github.tecnoguard.domain.service.IWorkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

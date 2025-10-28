@@ -1,6 +1,6 @@
 package com.github.tecnoguard.domain.service;
 
-import com.github.tecnoguard.domain.model.WorkOrder;
+import com.github.tecnoguard.domain.models.WorkOrder;
 
 import java.time.LocalDate;
 import java.util.List;
