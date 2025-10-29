@@ -9,5 +9,9 @@ spring:
     hibernate.ddl-auto: create-drop
     show-sql: true
   h2:
-  console:
-    enabled: true
+    console:
+      enabled: true
+  security:
+    user:
+      name: admin
+      password: 1234

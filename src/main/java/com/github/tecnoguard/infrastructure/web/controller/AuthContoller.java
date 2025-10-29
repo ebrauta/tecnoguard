@@ -1,13 +1,14 @@
 package com.github.tecnoguard.infrastructure.web.controller;
 
-import com.github.tecnoguard.application.dtos.user.request.RegisterUserDTO;
 import com.github.tecnoguard.application.dtos.user.request.LoginDTO;
+import com.github.tecnoguard.application.dtos.user.request.RegisterUserDTO;
 import com.github.tecnoguard.application.dtos.user.response.LoginResponseDTO;
 import com.github.tecnoguard.application.dtos.user.response.RegisterReponseDTO;
 import com.github.tecnoguard.application.dtos.user.response.UserInfoDTO;
-import com.github.tecnoguard.domain.enums.UserRole;
+import com.github.tecnoguard.application.mappers.users.UserMapper;
 import com.github.tecnoguard.domain.models.User;
 import com.github.tecnoguard.infrastructure.persistence.UserRepository;
+import com.github.tecnoguard.infrastructure.service.UserServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,11 +28,17 @@ public class AuthContoller {
     private final AuthenticationManager manager;
     private final PasswordEncoder encoder;
     private final UserRepository repo;
+    private final UserServiceImpl service;
+    private final UserMapper mapper = new UserMapper();
 
-    public AuthContoller(AuthenticationManager manager, PasswordEncoder encoder, UserRepository repo) {
+    public AuthContoller(AuthenticationManager manager,
+                         PasswordEncoder encoder,
+                         UserRepository repo,
+                         UserServiceImpl service) {
         this.manager = manager;
         this.encoder = encoder;
         this.repo = repo;
+        this.service = service;
     }
 
     @PostMapping("/register")
@@ -39,18 +46,24 @@ public class AuthContoller {
         if (repo.findByUsername(dto.username()).isPresent()) {
             return ResponseEntity.badRequest().body("Usuário já existe");
         }
-        User user = new User();
+        /*User user = new User();
         user.setUsername(dto.username());
         user.setPassword(encoder.encode(dto.password()));
         user.setRole(dto.role() != null ? dto.role() : UserRole.OPERATOR);
 
         repo.save(user);
-        RegisterReponseDTO response = new RegisterReponseDTO(
+        */
+
+        User user = mapper.fromRegisterToEntity(dto);
+        user = service.create(user);
+
+       /* RegisterReponseDTO response = new RegisterReponseDTO(
                 user.getId(),
                 user.getUsername(),
                 user.getRole().name(),
-                user.getCreatedAt());
+                user.getCreatedAt());*/
 
+        RegisterReponseDTO response = mapper.fromUserToResponse(user);
         return ResponseEntity.ok(response);
     }
 
@@ -67,15 +80,15 @@ public class AuthContoller {
                     LocalDateTime.now()
             );
             return ResponseEntity.ok(response);
-        } catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário ou senha inválidos");
         }
     }
 
     @GetMapping("/aboutme")
-    public ResponseEntity<?> about(){
+    public ResponseEntity<?> about() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser") ){
+        if (auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Não autenticado");
         }
         return ResponseEntity.ok(new UserInfoDTO(

@@ -4,7 +4,12 @@ import com.github.tecnoguard.domain.enums.UserRole;
 import com.github.tecnoguard.domain.shared.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,6 +22,7 @@ import java.util.List;
 @Table(name = "tb_users")
 @Getter
 @Setter
+@NoArgsConstructor
 public class User extends BaseEntity implements UserDetails {
     private String username;
     private String password;
@@ -46,5 +52,10 @@ public class User extends BaseEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void create(){
+        UserRole userRole = this.role == null ? UserRole.OPERATOR : this.role;
+        this.role = userRole;
     }
 }

@@ -17,11 +17,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -125,9 +123,6 @@ class AuthControllerTest {
                 .andExpect(content().string(CoreMatchers.containsString("Usuário ou senha inválidos")));
     }
 
-    // ----------------------------
-    // 🔹 3. /me - usuário autenticado
-    // ----------------------------
     @Test
     @DisplayName("Auth - Deve retornar dados do usuário autenticado")
     void shouldReturnLoggedUserInfo() throws Exception {
