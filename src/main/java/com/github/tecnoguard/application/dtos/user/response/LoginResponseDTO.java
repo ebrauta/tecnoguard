@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public record LoginResponseDTO(
         String username,
         String message,
+        String token,
         LocalDateTime timestamp
 ) {
 }
