@@ -6,6 +6,7 @@ import com.github.tecnoguard.application.dtos.auth.response.UserInfoDTO;
 import com.github.tecnoguard.core.exceptions.AccessDeniedBusiness;
 import com.github.tecnoguard.core.exceptions.WrongLoginException;
 import com.github.tecnoguard.domain.models.User;
+import com.github.tecnoguard.infrastructure.persistence.UserRepository;
 import com.github.tecnoguard.infrastructure.security.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.LoginException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Tag(name = "Auth - Autenticação", description = "Gestão de Autenticação e Autorização")
 @RestController
@@ -25,10 +27,12 @@ import java.time.LocalDateTime;
 public class AuthController {
 
     private final AuthenticationManager manager;
+    private final UserRepository repo;
     private final TokenService tokenService;
 
-    public AuthController(AuthenticationManager manager, TokenService tokenService) {
+    public AuthController(AuthenticationManager manager, UserRepository repo, TokenService tokenService) {
         this.manager = manager;
+        this.repo = repo;
         this.tokenService = tokenService;
     }
 
@@ -39,6 +43,11 @@ public class AuthController {
             var usernamePassword = new UsernamePasswordAuthenticationToken(dto.username(), dto.password());
             Authentication auth = manager.authenticate(usernamePassword);
             SecurityContextHolder.getContext().setAuthentication(auth);
+            Optional<User> user = repo.findByUsername(dto.username());
+            if(user.isPresent()){
+                user.get().setLastLogin(LocalDateTime.now());
+                repo.save(user.get());
+            }
             String token = tokenService.generateToken((User) auth.getPrincipal());
             LoginResponseDTO response = new LoginResponseDTO(dto.username(), "Autenticação realizada com sucesso", token, LocalDateTime.now());
             return ResponseEntity.ok(response);

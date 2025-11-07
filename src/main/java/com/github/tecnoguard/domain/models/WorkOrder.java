@@ -9,6 +9,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -81,6 +84,14 @@ public class WorkOrder extends AuditableEntity {
         this.cancelReason = reason;
         this.workOrderLog.add("Os cancelada em:" + LocalDate.now());
         this.status = WOStatus.CANCELLED;
+    }
+
+    public Page<String> getLogs(Pageable pageable) {
+        List<String> logList = this.getWorkOrderLog();
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), logList.size());
+        List<String> content = logList.subList(start, end);
+        return new PageImpl<>(content, pageable, logList.size());
     }
 }
 

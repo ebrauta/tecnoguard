@@ -5,11 +5,11 @@ import com.github.tecnoguard.application.dtos.user.request.CreateUserDTO;
 import com.github.tecnoguard.application.dtos.user.request.UpdateUserDTO;
 import com.github.tecnoguard.application.dtos.user.response.UserResponseDTO;
 import com.github.tecnoguard.application.mappers.users.UserMapper;
+import com.github.tecnoguard.core.shared.PageDTO;
 import com.github.tecnoguard.domain.models.User;
 import com.github.tecnoguard.infrastructure.service.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,8 +17,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -43,12 +41,12 @@ public class UserController {
 
     @Operation(summary = "Listar todos", description = "Lista todos os usuários.")
     @GetMapping
-    public ResponseEntity<Page<UserResponseDTO>> list(
+    public ResponseEntity<PageDTO<UserResponseDTO>> list(
             @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC)
             Pageable pageable
     ){
         Page<UserResponseDTO> page = service.list(pageable).map(mapper::toResponse);
-        return ResponseEntity.status(HttpStatus.OK).body(page);
+        return ResponseEntity.status(HttpStatus.OK).body(new PageDTO<>(page));
     }
 
     @Operation(summary = "Detalhes", description = "Mostra informação do usuário.")

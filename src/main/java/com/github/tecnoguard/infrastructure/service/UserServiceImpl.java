@@ -52,7 +52,7 @@ public class UserServiceImpl implements IUserService {
                 "USER_CREATED",
                 "USER",
                 response.getId(),
-                String.format("Usuário criado por %s", getCurrentUser())
+                String.format("Usuário %s criado por %s", response.getUsername(), getCurrentUser())
         );
         return response;
     }

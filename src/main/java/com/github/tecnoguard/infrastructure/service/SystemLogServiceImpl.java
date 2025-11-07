@@ -21,7 +21,7 @@ public class SystemLogServiceImpl implements ISystemLogService {
     @Override
     public void log(String action, String targetType, Long targetId, String details) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String actor = (auth != null && auth.getName().equals("anonymousUser")) ? auth.getName() : "SYSTEM";
+        String actor = (auth != null && !auth.getName().equals("anonymousUser")) ? auth.getName() : "SYSTEM";
         SystemLog log = new SystemLog();
         log.setTimestamp(LocalDateTime.now());
         log.setActorUsername(actor);

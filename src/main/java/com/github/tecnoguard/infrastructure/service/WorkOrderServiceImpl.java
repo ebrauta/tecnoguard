@@ -34,13 +34,14 @@ public class WorkOrderServiceImpl implements IWorkService {
     @Transactional
     public WorkOrder create(WorkOrder order) {
         order.create();
+        WorkOrder response = repo.save(order);
         logService.log(
                 "WORK_ORDER_CREATED",
                 "WORK_ORDER",
-                order.getId(),
+                response.getId(),
                 String.format("OS criada por %s ", getCurrentUser())
         );
-        return repo.save(order);
+        return response;
     }
 
     @Override
