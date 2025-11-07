@@ -26,11 +26,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final UserDetailsServiceImpl service;
     private final JwtFilter jwtFilter;
 
-    public SecurityConfig(UserDetailsServiceImpl service, JwtFilter jwtFilter) {
-        this.service = service;
+    public SecurityConfig(JwtFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
     }
 
@@ -48,10 +46,10 @@ public class SecurityConfig {
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**").permitAll()
                                 .requestMatchers("/api/users/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("ADMIN", "SUPERVISOR")
                                 .requestMatchers(HttpMethod.PATCH, "/api/users/reactivate/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PATCH, "/api/users/deactivate/**").hasAnyRole("ADMIN", "SUPERVISOR")
                                 .requestMatchers(HttpMethod.PATCH, "/api/users/password/**").authenticated()
-                                .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("ADMIN", "SUPERVISOR")
                                 .requestMatchers(HttpMethod.POST, "/api/workorders").hasAnyRole("ADMIN", "PLANNER", "OPERATOR")
                                 .requestMatchers(HttpMethod.PATCH, "/api/workorders/assign/**").hasAnyRole("ADMIN", "PLANNER")
                                 .requestMatchers(HttpMethod.PATCH, "/api/workorders/start/**").hasAnyRole("ADMIN", "TECHNICIAN")

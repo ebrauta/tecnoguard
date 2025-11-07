@@ -69,14 +69,14 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("User - Deve registrar novo usuário")
+    @DisplayName("UserController - Deve registrar novo usuário")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldRegisterUser() throws Exception {
         registerUser();
     }
 
     @Test
-    @DisplayName("User - Deve listar todos os usuários")
+    @DisplayName("UserController - Deve listar todos os usuários")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldListUsers() throws Exception {
         registerUser();
@@ -88,7 +88,7 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("User - Deve buscar usuário por ID")
+    @DisplayName("UserController - Deve buscar usuário por ID")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldGetUserById() throws Exception {
         long id = registerUser();
@@ -99,7 +99,7 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("User - Deve atualizar dados do usuário")
+    @DisplayName("UserController - Deve atualizar dados do usuário")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldUpdateUser() throws Exception {
         long id = registerUser();
@@ -114,7 +114,7 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("User - Deve desativar usuário")
+    @DisplayName("UserController - Deve desativar usuário")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldDeactivateUser() throws Exception {
         long id = registerUser();
@@ -123,7 +123,7 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("User - Deve reativar usuário")
+    @DisplayName("UserController - Deve reativar usuário")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldReactivateUser() throws Exception {
         long id = registerUser();
@@ -132,7 +132,7 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("User - Deve alterar senha do usuário")
+    @DisplayName("UserController - Deve alterar senha do usuário")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldChangePassword() throws Exception {
         long id = registerUser();
@@ -144,7 +144,7 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("User - Deve retornar 401 se não autenticado")
+    @DisplayName("UserController - Deve retornar 401 se não autenticado")
     void shouldRejectUnauthenticatedUserAccess() throws Exception {
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isForbidden());

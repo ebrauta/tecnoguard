@@ -82,7 +82,7 @@ class WorkOrderControllerTest {
     }
 
     @Test
-    @DisplayName("Controller - Deve criar uma OS")
+    @DisplayName("WorkOrderController - Deve criar uma OS")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldCreateWorkOrder() throws Exception {
         createWorkOrder();
@@ -90,7 +90,7 @@ class WorkOrderControllerTest {
 
 
     @Test
-    @DisplayName("Controller - Deve listar todas as OS")
+    @DisplayName("WorkOrderController - Deve listar todas as OS")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldListWorkOrders() throws Exception {
         createWorkOrder();
@@ -103,7 +103,7 @@ class WorkOrderControllerTest {
     }
 
     @Test
-    @DisplayName("Controller - Deve buscar OS por ID")
+    @DisplayName("WorkOrderController - Deve buscar OS por ID")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldGetWorkOrderById() throws Exception {
         long id = createWorkOrder();
@@ -115,7 +115,7 @@ class WorkOrderControllerTest {
     }
 
     @Test
-    @DisplayName("Controller - Deve agendar uma OS (OPEN → SCHEDULED)")
+    @DisplayName("WorkOrderController - Deve agendar uma OS (OPEN → SCHEDULED)")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldAssignWorkOrder() throws Exception {
         long id = createWorkOrder();
@@ -133,19 +133,17 @@ class WorkOrderControllerTest {
 
 
     @Test
-    @DisplayName("Controller - Deve iniciar execução (SCHEDULED → IN_PROGRESS)")
+    @DisplayName("WorkOrderController - Deve iniciar execução (SCHEDULED → IN_PROGRESS)")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldStartWorkOrder() throws Exception {
         long id = createWorkOrder();
 
-        // primeiro agenda
         mockMvc.perform(patch("/api/workorders/assign/{id}", id)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(assignDTO))
                         )
                 .andExpect(status().isOk());
 
-        // agora inicia
         mockMvc.perform(patch("/api/workorders/start/{id}", id)
                         )
                 .andExpect(status().isOk())
@@ -153,12 +151,11 @@ class WorkOrderControllerTest {
     }
 
     @Test
-    @DisplayName("Controller - Deve completar a OS (IN_PROGRESS → COMPLETED)")
+    @DisplayName("WorkOrderController - Deve completar a OS (IN_PROGRESS → COMPLETED)")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldCompleteWorkOrder() throws Exception {
         long id = createWorkOrder();
 
-        // agenda e inicia
         mockMvc.perform(
                         patch("/api/workorders/assign/{id}", id)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -169,7 +166,7 @@ class WorkOrderControllerTest {
         mockMvc.perform(patch("/api/workorders/start/{id}", id))
                 .andExpect(status().isOk());
 
-        // completa
+
         mockMvc.perform(patch("/api/workorders/complete/{id}", id)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(completeDTO))
@@ -179,12 +176,11 @@ class WorkOrderControllerTest {
     }
 
     @Test
-    @DisplayName("Controller - Deve cancelar uma OS (IN_PROGRESS → CANCELLED)")
+    @DisplayName("WorkOrderController - Deve cancelar uma OS (IN_PROGRESS → CANCELLED)")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldCancelWorkOrder() throws Exception {
         long id = createWorkOrder();
 
-        // agenda e inicia
         mockMvc.perform(patch("/api/workorders/assign/{id}", id)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(assignDTO))
@@ -195,7 +191,6 @@ class WorkOrderControllerTest {
                         )
                 .andExpect(status().isOk());
 
-        // cancela
         mockMvc.perform(patch("/api/workorders/cancel/{id}", id)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(cancelDTO))
@@ -206,7 +201,7 @@ class WorkOrderControllerTest {
     }
 
     @Test
-    @DisplayName("Controller - Deve retornar 401 se não autenticado")
+    @DisplayName("WorkOrderController - Deve retornar 401 se não autenticado")
     void shouldRejectUnauthorizedAccess() throws Exception {
         mockMvc.perform(get("/api/workorders"))
                 .andExpect(status().isForbidden());

@@ -56,6 +56,10 @@ public class User extends BaseEntity implements UserDetails {
         return true;
     }
 
+    @Override
+    public boolean isActive() {
+        return this.active;
+    }
 
     public void changePassword(PasswordEncoder encoder, String curPass, String newPass) {
         validatePassword(encoder, curPass);

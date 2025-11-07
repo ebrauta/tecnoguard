@@ -52,7 +52,7 @@ class AuthenticationManagerTest {
     }
 
     @Test
-    @DisplayName("Não deve autenticar com senha incorreta")
+    @DisplayName("AuthManager - Não deve autenticar com senha incorreta")
     void shouldFailWithWrongPassword() {
         Authentication request = new UsernamePasswordAuthenticationToken("admin", "senhaErrada");
 
@@ -61,7 +61,7 @@ class AuthenticationManagerTest {
     }
 
     @Test
-    @DisplayName("Não deve autenticar usuário inexistente")
+    @DisplayName("AuthManager - Não deve autenticar usuário inexistente")
     void shouldFailWithUnknownUser() {
         Authentication request = new UsernamePasswordAuthenticationToken("invalido", "1234");
 

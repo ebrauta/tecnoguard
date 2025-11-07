@@ -57,7 +57,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Auth - Deve autenticar usuário existente com senha correta")
+    @DisplayName("AuthController - Deve autenticar usuário existente com senha correta")
     void shouldLoginSuccessfully() throws Exception {
         // cria usuário manualmente no repositório
         userRepo.save(user);
@@ -72,7 +72,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Auth - Não deve autenticar com senha incorreta")
+    @DisplayName("AuthController- Não deve autenticar com senha incorreta")
     void shouldFailLoginWithWrongPassword() throws Exception {
         userRepo.save(user);
 
@@ -86,7 +86,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Auth - Não deve autenticar usuário inexistente")
+    @DisplayName("AuthController - Não deve autenticar usuário inexistente")
     void shouldFailLoginWithUnknownUser() throws Exception {
         LoginDTO dto = new LoginDTO("inexistente", "1234");
 
@@ -98,7 +98,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Auth - Deve retornar dados do usuário autenticado")
+    @DisplayName("AuthController - Deve retornar dados do usuário autenticado")
     void shouldReturnLoggedUserInfo() throws Exception {
         userRepo.save(user);
         var response = mockMvc.perform(post("/api/auth/login")
@@ -121,7 +121,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Auth - Deve negar acesso a /whoami se não autenticado")
+    @DisplayName("AuthController - Deve negar acesso a /whoami se não autenticado")
     void shouldRejectUnauthorizedAccessToMe() throws Exception {
         mockMvc.perform(get("/api/auth/whoami"))
                 .andExpect(status().isForbidden());
