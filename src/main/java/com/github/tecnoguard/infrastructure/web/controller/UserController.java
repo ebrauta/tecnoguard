@@ -67,15 +67,15 @@ public class UserController {
     }
 
     @PatchMapping("/deactivate/{id}")
-    public ResponseEntity<?> deactivate(@PathVariable Long id){
+    public ResponseEntity<Void> deactivate(@PathVariable Long id){
         service.deactivate(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/reactivate/{id}")
-    public ResponseEntity<?> activate(@PathVariable Long id){
+    public ResponseEntity<Void> activate(@PathVariable Long id){
         service.reactivate(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/password/{id}")
