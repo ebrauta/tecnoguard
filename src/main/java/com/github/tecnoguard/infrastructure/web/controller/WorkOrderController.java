@@ -10,6 +10,10 @@ import com.github.tecnoguard.domain.models.WorkOrder;
 import com.github.tecnoguard.domain.service.IWorkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,8 +34,12 @@ public class WorkOrderController {
 
     @Operation(summary = "Listar todas", description = "Lista todas as OS.")
     @GetMapping
-    public List<FullResponseWO> list() {
-        return service.list().stream().map(mapper::fromEntityToFullDTO).toList();
+    public ResponseEntity<Page<FullResponseWO>> list(
+            @PageableDefault(size = 10, sort = "equipment", direction = Sort.Direction.ASC)
+            Pageable pageable
+    ) {
+        Page<FullResponseWO> page = service.list(pageable).map(mapper::fromEntityToFullDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(page);
     }
 
     @Operation(summary = "Detalhar OS", description = "Mostra detalhes da OS.\nCampo obrigatório: id")
@@ -52,7 +60,7 @@ public class WorkOrderController {
     }
 
     @Operation(summary = "Agendar OS", description = "Faz o agendamento de uma OS.\nCampos obrigatórios: id, tecnico e data")
-    @PatchMapping("/{id}/assign")
+    @PatchMapping("/assign/{id}")
     public ResponseEntity<FullResponseWO> assign(@PathVariable Long id,
                                                  @RequestBody AssignWO dto) {
         WorkOrder assigned = service.assign(id, dto.tech(), dto.date());
@@ -61,7 +69,7 @@ public class WorkOrderController {
     }
 
     @Operation(summary = "Iniciar Serviço", description = "Inicia o serviço de uma OS.\nCampos obrigatórios: id")
-    @PatchMapping("/{id}/start")
+    @PatchMapping("/start/{id}")
     public ResponseEntity<FullResponseWO> start(@PathVariable Long id) {
         WorkOrder started = service.start(id);
         FullResponseWO response = mapper.fromEntityToFullDTO(started);
@@ -69,7 +77,7 @@ public class WorkOrderController {
     }
 
     @Operation(summary = "Terminar Serviço", description = "Finaliza o serviço de uma OS.\nCampos obrigatórios: id e log(resumo) ")
-    @PatchMapping("/{id}/complete")
+    @PatchMapping("/complete/{id}")
     public ResponseEntity<FullResponseWO>  complete(@PathVariable Long id, @RequestBody CompleteWO dto) {
         WorkOrder completed = service.complete(id, dto.log());
         FullResponseWO response = mapper.fromEntityToFullDTO(completed);
@@ -77,7 +85,7 @@ public class WorkOrderController {
     }
 
     @Operation(summary = "Cancelar Serviço", description = "Cancela uma OS.\nCampos obrigatórios: id e motivo ")
-    @PatchMapping("/{id}/cancel")
+    @PatchMapping("/cancel/{id}")
     public ResponseEntity<FullResponseWO>  cancel(@PathVariable Long id, @RequestBody CancelWO dto) {
         WorkOrder cancelled = service.cancel(id, dto.reason());
         FullResponseWO response = mapper.fromEntityToFullDTO(cancelled);

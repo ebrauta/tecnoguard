@@ -1,4 +1,4 @@
-package com.github.tecnoguard.application.dtos.user.request;
+package com.github.tecnoguard.application.dtos.auth.request;
 
 import jakarta.validation.constraints.NotBlank;
 

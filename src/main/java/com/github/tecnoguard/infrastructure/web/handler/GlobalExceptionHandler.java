@@ -1,10 +1,8 @@
 package com.github.tecnoguard.infrastructure.web.handler;
 
-import com.github.tecnoguard.core.exceptions.BusinessException;
-import com.github.tecnoguard.core.exceptions.NotFoundException;
+import com.github.tecnoguard.core.exceptions.*;
 import com.github.tecnoguard.core.shared.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -29,7 +27,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<?> handleNotFound(NotFoundException ex, HttpServletRequest req) {
+    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException ex, HttpServletRequest req) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ErrorResponse(
                         LocalDateTime.now(),
@@ -41,7 +39,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ErrorResponse(
                         LocalDateTime.now(),
@@ -51,8 +49,44 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    @ExceptionHandler(WrongLoginException.class)
+    public ResponseEntity<ErrorResponse> handleLogin(Exception ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new ErrorResponse(
+                        LocalDateTime.now(),
+                        "Erro de Login",
+                        ex.getMessage(),
+                        req.getRequestURI()
+                )
+        );
+    }
+
+    @ExceptionHandler(AccessDeniedBusiness.class)
+    public ResponseEntity<ErrorResponse> handleAboutMe(Exception ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new ErrorResponse(
+                        LocalDateTime.now(),
+                        "Usuário não autenticado",
+                        ex.getMessage(),
+                        req.getRequestURI()
+                )
+        );
+    }
+
+    @ExceptionHandler(DuplicatedException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicated(Exception ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ErrorResponse(
+                        LocalDateTime.now(),
+                        "Registro duplicado",
+                        ex.getMessage(),
+                        req.getRequestURI()
+                )
+        );
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGeneral(Exception ex, HttpServletRequest req) {
+    public ResponseEntity<ErrorResponse> handleGeneral(Exception ex, HttpServletRequest req) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new ErrorResponse(
                         LocalDateTime.now(),

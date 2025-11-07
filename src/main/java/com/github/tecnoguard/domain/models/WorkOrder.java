@@ -3,8 +3,8 @@ package com.github.tecnoguard.domain.models;
 import com.github.tecnoguard.core.exceptions.BusinessException;
 import com.github.tecnoguard.domain.enums.WOStatus;
 import com.github.tecnoguard.domain.enums.WOType;
-import com.github.tecnoguard.domain.shared.BaseEntity;
-import jakarta.persistence.Column;
+import com.github.tecnoguard.domain.shared.models.AuditableEntity;
+import com.github.tecnoguard.domain.shared.models.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -19,7 +19,7 @@ import java.util.List;
 @Table(name = "tb_workorder")
 @NoArgsConstructor
 @Getter
-public class WorkOrder extends BaseEntity {
+public class WorkOrder extends AuditableEntity {
 
     private String description;
     private String equipment;

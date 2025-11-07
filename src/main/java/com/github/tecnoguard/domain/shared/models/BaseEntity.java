@@ -1,4 +1,4 @@
-package com.github.tecnoguard.domain.shared;
+package com.github.tecnoguard.domain.shared.models;
 
 import jakarta.persistence.*;
 import lombok.Getter;

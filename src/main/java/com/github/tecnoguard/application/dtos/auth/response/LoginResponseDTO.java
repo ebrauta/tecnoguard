@@ -1,6 +1,4 @@
-package com.github.tecnoguard.application.dtos.user.response;
-
-import com.github.tecnoguard.domain.enums.UserRole;
+package com.github.tecnoguard.application.dtos.auth.response;
 
 import java.time.LocalDateTime;
 

@@ -1,8 +1,9 @@
 package com.github.tecnoguard.infrastructure.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tecnoguard.application.dtos.user.request.LoginDTO;
-import com.github.tecnoguard.application.dtos.user.request.RegisterUserDTO;
+import com.github.tecnoguard.application.dtos.auth.request.LoginDTO;
+import com.github.tecnoguard.application.dtos.auth.response.LoginResponseDTO;
+import com.github.tecnoguard.application.dtos.user.request.CreateUserDTO;
 import com.github.tecnoguard.domain.enums.UserRole;
 import com.github.tecnoguard.domain.models.User;
 import com.github.tecnoguard.infrastructure.persistence.UserRepository;
@@ -39,7 +40,6 @@ class AuthControllerTest {
     private PasswordEncoder encoder;
 
     private User user;
-    private RegisterUserDTO registerDTO;
     private LoginDTO loginDTO;
 
 
@@ -51,35 +51,9 @@ class AuthControllerTest {
         user.setRole(UserRole.TECHNICIAN);
         user.setEmail("joao@mail.com");
 
-        registerDTO = new RegisterUserDTO("joao", "1234", UserRole.TECHNICIAN, "joao@mail.com");
-
         loginDTO = new LoginDTO("joao", "1234");
 
         userRepo.deleteAll(); // limpa o banco antes de cada teste
-    }
-
-    @Test
-    @DisplayName("Auth - Deve registrar um novo usuário com sucesso")
-    void shouldRegisterNewUser() throws Exception {
-        mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(registerDTO)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("joao"))
-                .andExpect(jsonPath("$.role").value("TECHNICIAN"));
-    }
-
-    @Test
-    @DisplayName("Auth - Não deve registrar usuário duplicado")
-    void shouldNotRegisterDuplicateUser() throws Exception {
-        userRepo.save(user);
-        ;
-
-        mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(registerDTO)))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(CoreMatchers.containsString("Usuário já existe")));
     }
 
     @Test
@@ -108,7 +82,7 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(dto)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string(CoreMatchers.containsString("Usuário ou senha inválidos")));
+                .andExpect(jsonPath("$.message").value("Usuário ou Senha inválidos"));
     }
 
     @Test
@@ -120,26 +94,36 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(dto)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string(CoreMatchers.containsString("Usuário ou senha inválidos")));
+                .andExpect(jsonPath("$.message").value("Usuário ou Senha inválidos"));
     }
 
     @Test
     @DisplayName("Auth - Deve retornar dados do usuário autenticado")
     void shouldReturnLoggedUserInfo() throws Exception {
         userRepo.save(user);
+        var response = mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(loginDTO)))
+                .andReturn().getResponse().getContentAsString();
 
-        mockMvc.perform(get("/api/auth/aboutme")
-                        .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic("joao", "1234")))
+        String token = mapper.readValue(response, LoginResponseDTO.class).token();
+
+        mockMvc.perform(get("/api/auth/whoami")
+                        .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
+                                .jwt()
+                                .jwt(jwt -> jwt
+                                        .tokenValue(token)
+                                        .claim("sub", "joao")
+                                        .claim("scope", "TECHNICIAN"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("joao"))
-                .andExpect(jsonPath("$.roles").value(CoreMatchers.containsString("TECHNICIAN")));
+                .andExpect(jsonPath("$.role").value(CoreMatchers.containsString("TECHNICIAN")));
     }
 
     @Test
-    @DisplayName("Auth - Deve negar acesso a /me se não autenticado")
+    @DisplayName("Auth - Deve negar acesso a /whoami se não autenticado")
     void shouldRejectUnauthorizedAccessToMe() throws Exception {
-        mockMvc.perform(get("/api/auth/aboutme"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().string(CoreMatchers.containsString("Não autenticado")));
+        mockMvc.perform(get("/api/auth/whoami"))
+                .andExpect(status().isForbidden());
     }
 }

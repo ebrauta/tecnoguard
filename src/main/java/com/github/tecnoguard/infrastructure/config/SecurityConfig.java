@@ -34,17 +34,6 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
     }
 
-    /*@Bean
-    public InMemoryUserDetailsManager userDetailsManager() {
-        var user = //service.loadUserByUsername("admin");
-                User
-                        .withUsername("admin")
-                        .password("{noop}1234")
-                        .roles("ADMIN")
-                        .build();
-        return new InMemoryUserDetailsManager(user);
-    }*/
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -58,6 +47,16 @@ public class SecurityConfig {
                                         "/h2-console/**",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**").permitAll()
+                                .requestMatchers("/api/users/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.PATCH, "/api/users/reactivate/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.PATCH, "/api/users/deactivate/**").hasAnyRole("ADMIN", "SUPERVISOR")
+                                .requestMatchers(HttpMethod.PATCH, "/api/users/password/**").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("ADMIN", "SUPERVISOR")
+                                .requestMatchers(HttpMethod.POST, "/api/workorders").hasAnyRole("ADMIN", "PLANNER", "OPERATOR")
+                                .requestMatchers(HttpMethod.PATCH, "/api/workorders/assign/**").hasAnyRole("ADMIN", "PLANNER")
+                                .requestMatchers(HttpMethod.PATCH, "/api/workorders/start/**").hasAnyRole("ADMIN", "TECHNICIAN")
+                                .requestMatchers(HttpMethod.PATCH, "/api/workorders/complete/**").hasAnyRole("ADMIN", "TECHNICIAN", "SUPERVISOR")
+                                .requestMatchers(HttpMethod.PATCH, "/api/workorders/cancel/**").hasAnyRole("ADMIN", "SUPERVISOR")
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
