@@ -3,6 +3,8 @@ package com.github.tecnoguard.domain.shared.models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +16,9 @@ public abstract class BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
+    @CreatedDate
     protected LocalDateTime createdAt = LocalDateTime.now();
+    @LastModifiedDate
     protected LocalDateTime updatedAt = LocalDateTime.now();
 
     protected boolean active = true;
