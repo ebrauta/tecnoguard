@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -24,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
@@ -55,6 +57,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PATCH, "/api/workorders/start/**").hasAnyRole("ADMIN", "TECHNICIAN")
                                 .requestMatchers(HttpMethod.PATCH, "/api/workorders/complete/**").hasAnyRole("ADMIN", "TECHNICIAN", "SUPERVISOR")
                                 .requestMatchers(HttpMethod.PATCH, "/api/workorders/cancel/**").hasAnyRole("ADMIN", "SUPERVISOR")
+                                .requestMatchers(HttpMethod.GET, "/api/workorders/log/**").hasAnyRole("ADMIN", "PLANNER", "SUPERVISOR")
+                                .requestMatchers(HttpMethod.POST, "/api/workorders/log/**").hasAnyRole("ADMIN", "PLANNER", "SUPERVISOR", "TECHNICIAN")
                                 .requestMatchers(HttpMethod.GET, "/api/logs").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )

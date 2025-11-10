@@ -3,6 +3,7 @@ package com.github.tecnoguard.infrastructure.web.controller;
 import com.github.tecnoguard.core.shared.PageDTO;
 import com.github.tecnoguard.domain.shared.models.SystemLog;
 import com.github.tecnoguard.infrastructure.persistence.SystemLogRepository;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,6 +26,7 @@ public class SystemLogController {
         this.repo = repo;
     }
 
+    @Operation(summary = "Listar log", description = "Mostra os logs do sistema.")
     @GetMapping
     public ResponseEntity<PageDTO<SystemLog>> list(
             @PageableDefault(size = 10, sort = "timestamp", direction = Sort.Direction.DESC) Pageable pageable) {

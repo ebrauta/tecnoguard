@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,6 +33,7 @@ public class UserController {
 
     @Operation(summary = "Registrar usuário", description = "Cadastra o usuário.")
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDTO> register(@Valid @RequestBody CreateUserDTO dto) {
         User user = mapper.toEntity(dto);
         User created = service.create(user);
@@ -41,6 +43,7 @@ public class UserController {
 
     @Operation(summary = "Listar todos", description = "Lista todos os usuários.")
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR')")
     public ResponseEntity<PageDTO<UserResponseDTO>> list(
             @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC)
             Pageable pageable
@@ -51,12 +54,14 @@ public class UserController {
 
     @Operation(summary = "Detalhes", description = "Mostra informação do usuário.")
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR')")
     public ResponseEntity<UserResponseDTO> get(@PathVariable Long id){
         User user = service.findById(id);
         UserResponseDTO response = mapper.toResponse(user);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "Atualizar", description = "Atualiza informação do usuário.")
     @PatchMapping("/{id}")
     public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @Valid @RequestBody UpdateUserDTO dto){
         User user = service.findById(id);
@@ -66,18 +71,23 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "Desativar", description = "Desativa usuário.")
     @PatchMapping("/deactivate/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR')")
     public ResponseEntity<Void> deactivate(@PathVariable Long id){
         service.deactivate(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @Operation(summary = "Reativar", description = "Reativa usuário.")
     @PatchMapping("/reactivate/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> activate(@PathVariable Long id){
         service.reactivate(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @Operation(summary = "Mudar senha", description = "Altera a senha do usuário.")
     @PatchMapping("/password/{id}")
     public ResponseEntity<Void> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordDTO dto){
         service.changePassword(id, dto.currentPassword(), dto.newPassword());

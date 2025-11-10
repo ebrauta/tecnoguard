@@ -19,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +53,7 @@ public class WorkOrderController {
 
     @Operation(summary = "Listar Log da OS", description = "Mostrar documentação da OS.")
     @GetMapping("/log/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR', 'PLANNER')")
     public ResponseEntity<PageDTO<WorkOrderNoteDTO>> getNotes(
             @PageableDefault(size = 10)
             Pageable pageable,
@@ -65,6 +67,7 @@ public class WorkOrderController {
 
     @Operation(summary = "Adicionar Log da OS", description = "Mostrar documentação da OS.")
     @PostMapping("/log/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR', 'PLANNER', 'TECHNICIAN')")
     public ResponseEntity<WorkOrderNoteDTO> addLog(
             @PathVariable Long id,
             @RequestBody AddNoteWO noteWO
@@ -86,6 +89,7 @@ public class WorkOrderController {
 
     @Operation(summary = "Criar nova OS", description = "Cria uma nova OS.\nCampos obrigatórios: descrição, equipamento, cliente e tipo")
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'PLANNER', 'OPERATOR')")
     public ResponseEntity<FullResponseWO> create(@RequestBody CreateWO dto) {
         WorkOrder wo = mapper.fromCreateToEntity(dto);
         WorkOrder created = service.create(wo);
@@ -95,6 +99,7 @@ public class WorkOrderController {
 
     @Operation(summary = "Agendar OS", description = "Faz o agendamento de uma OS.\nCampos obrigatórios: id, tecnico e data")
     @PatchMapping("/assign/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PLANNER')")
     public ResponseEntity<FullResponseWO> assign(@PathVariable Long id,
                                                  @RequestBody AssignWO dto) {
         WorkOrder assigned = service.assign(id, dto.tech(), dto.date());
@@ -104,6 +109,7 @@ public class WorkOrderController {
 
     @Operation(summary = "Iniciar Serviço", description = "Inicia o serviço de uma OS.\nCampos obrigatórios: id")
     @PatchMapping("/start/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     public ResponseEntity<FullResponseWO> start(@PathVariable Long id) {
         WorkOrder started = service.start(id);
         FullResponseWO response = mapper.fromEntityToFullDTO(started);
@@ -112,6 +118,7 @@ public class WorkOrderController {
 
     @Operation(summary = "Terminar Serviço", description = "Finaliza o serviço de uma OS.\nCampos obrigatórios: id e log(resumo) ")
     @PatchMapping("/complete/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR', 'TECHNICIAN')")
     public ResponseEntity<FullResponseWO> complete(@PathVariable Long id, @RequestBody CompleteWO dto) {
         WorkOrder completed = service.complete(id, dto.log());
         FullResponseWO response = mapper.fromEntityToFullDTO(completed);
@@ -120,6 +127,7 @@ public class WorkOrderController {
 
     @Operation(summary = "Cancelar Serviço", description = "Cancela uma OS.\nCampos obrigatórios: id e motivo ")
     @PatchMapping("/cancel/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR')")
     public ResponseEntity<FullResponseWO> cancel(@PathVariable Long id, @RequestBody CancelWO dto) {
         WorkOrder cancelled = service.cancel(id, dto.reason());
         FullResponseWO response = mapper.fromEntityToFullDTO(cancelled);
