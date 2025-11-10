@@ -119,7 +119,7 @@ class UserControllerTest {
     void shouldDeactivateUser() throws Exception {
         long id = registerUser();
         mockMvc.perform(patch("/api/users/deactivate/{id}", id))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -128,7 +128,7 @@ class UserControllerTest {
     void shouldReactivateUser() throws Exception {
         long id = registerUser();
         mockMvc.perform(patch("/api/users/reactivate/{id}", id))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test
