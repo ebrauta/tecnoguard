@@ -1,13 +1,14 @@
 package com.github.tecnoguard.infrastructure.web.controller;
 
-import com.github.tecnoguard.application.dtos.workorder.request.AssignWO;
-import com.github.tecnoguard.application.dtos.workorder.request.CancelWO;
-import com.github.tecnoguard.application.dtos.workorder.request.CompleteWO;
-import com.github.tecnoguard.application.dtos.workorder.request.CreateWO;
+import com.github.tecnoguard.application.dtos.workorder.request.*;
 import com.github.tecnoguard.application.dtos.workorder.response.FullResponseWO;
+import com.github.tecnoguard.application.dtos.workorder.response.WorkOrderNoteDTO;
 import com.github.tecnoguard.application.mappers.workorder.WorkOrderMapper;
+import com.github.tecnoguard.application.mappers.workorder.WorkOrderNoteMapper;
 import com.github.tecnoguard.core.shared.PageDTO;
 import com.github.tecnoguard.domain.models.WorkOrder;
+import com.github.tecnoguard.domain.models.WorkOrderNote;
+import com.github.tecnoguard.domain.service.IWorkOrderNoteService;
 import com.github.tecnoguard.domain.service.IWorkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,6 +19,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,10 +31,13 @@ import java.util.List;
 public class WorkOrderController {
 
     private final IWorkService service;
+    private final IWorkOrderNoteService noteService;
     private final WorkOrderMapper mapper = new WorkOrderMapper();
+    private final WorkOrderNoteMapper noteMapper = new WorkOrderNoteMapper();
 
-    public WorkOrderController(IWorkService service) {
+    public WorkOrderController(IWorkService service, IWorkOrderNoteService noteService) {
         this.service = service;
+        this.noteService = noteService;
     }
 
     @Operation(summary = "Listar todas", description = "Lista todas as OS.")
@@ -46,14 +52,28 @@ public class WorkOrderController {
 
     @Operation(summary = "Listar Log da OS", description = "Mostrar documentação da OS.")
     @GetMapping("/log/{id}")
-    public ResponseEntity<PageDTO<String>> log(
+    public ResponseEntity<PageDTO<WorkOrderNoteDTO>> getNotes(
             @PageableDefault(size = 10)
             Pageable pageable,
             @PathVariable Long id
     ) {
         WorkOrder wo = service.findById(id);
-        Page<String> page = wo.getLogs(pageable);
+        Page<WorkOrderNoteDTO> page = noteService.listNotes(id, pageable)
+                .map(note -> new WorkOrderNoteDTO(note.getId(), note.getMessage(), note.getAuthor(), note.getCreatedAt()));
         return ResponseEntity.status(HttpStatus.OK).body(new PageDTO<>(page));
+    }
+
+    @Operation(summary = "Adicionar Log da OS", description = "Mostrar documentação da OS.")
+    @PostMapping("/log/{id}")
+    public ResponseEntity<WorkOrderNoteDTO> addLog(
+            @PathVariable Long id,
+            @RequestBody AddNoteWO noteWO
+    ) {
+        WorkOrder wo = service.findById(id);
+        String author = SecurityContextHolder.getContext().getAuthentication().getName();
+        WorkOrderNote note = noteService.addNote(wo, noteWO.message(), author);
+        WorkOrderNoteDTO response = noteMapper.toDTO(note);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @Operation(summary = "Detalhar OS", description = "Mostra detalhes da OS.\nCampo obrigatório: id")

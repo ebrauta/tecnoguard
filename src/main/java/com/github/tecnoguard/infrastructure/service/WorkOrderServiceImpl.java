@@ -1,7 +1,9 @@
 package com.github.tecnoguard.infrastructure.service;
 
 import com.github.tecnoguard.core.exceptions.NotFoundException;
+import com.github.tecnoguard.core.utils.NoteFormatter;
 import com.github.tecnoguard.domain.models.WorkOrder;
+import com.github.tecnoguard.domain.service.IWorkOrderNoteService;
 import com.github.tecnoguard.domain.service.IWorkService;
 import com.github.tecnoguard.domain.shared.service.ISystemLogService;
 import com.github.tecnoguard.infrastructure.persistence.WorkOrderRepository;
@@ -18,11 +20,15 @@ import java.time.LocalDate;
 public class WorkOrderServiceImpl implements IWorkService {
 
     private final WorkOrderRepository repo;
+    private final IWorkOrderNoteService noteService;
     private final ISystemLogService logService;
+    private final NoteFormatter noteFormatter;
 
-    public WorkOrderServiceImpl(WorkOrderRepository repo, ISystemLogService logService) {
+    public WorkOrderServiceImpl(WorkOrderRepository repo, IWorkOrderNoteService noteService, ISystemLogService logService, NoteFormatter noteFormatter) {
         this.repo = repo;
+        this.noteService = noteService;
         this.logService = logService;
+        this.noteFormatter = noteFormatter;
     }
 
     private String getCurrentUser() {
@@ -35,11 +41,13 @@ public class WorkOrderServiceImpl implements IWorkService {
     public WorkOrder create(WorkOrder order) {
         order.create();
         WorkOrder response = repo.save(order);
+        String user = getCurrentUser();
+        noteService.addSystemNote(response,noteFormatter.created(user), user);
         logService.log(
                 "WORK_ORDER_CREATED",
                 "WORK_ORDER",
                 response.getId(),
-                String.format("OS criada por %s ", getCurrentUser())
+                String.format("OS criada por %s ", user)
         );
         return response;
     }
@@ -49,13 +57,16 @@ public class WorkOrderServiceImpl implements IWorkService {
     public WorkOrder assign(Long id, String tech, LocalDate date) {
         WorkOrder w = findById(id);
         w.assign(tech, date);
+        WorkOrder response = repo.save(w);
+        String user = getCurrentUser();
+        noteService.addSystemNote(response, noteFormatter.assigned(tech, date, user), user);
         logService.log(
                 "WORK_ORDER_ASSIGNED",
                 "WORK_ORDER",
                 w.getId(),
                 String.format("Técnico %s designado por %s ", tech, getCurrentUser())
         );
-        return repo.save(w);
+        return response;
     }
 
     @Override
@@ -63,13 +74,16 @@ public class WorkOrderServiceImpl implements IWorkService {
     public WorkOrder start(Long id) {
         WorkOrder w = findById(id);
         w.start();
+        WorkOrder response = repo.save(w);
+        String user = getCurrentUser();
+        noteService.addSystemNote(w, noteFormatter.started(user), user);
         logService.log(
                 "WORK_ORDER_STARTED",
                 "WORK_ORDER",
                 w.getId(),
                 String.format("OS iniciada por %s ", getCurrentUser())
         );
-        return repo.save(w);
+        return response;
     }
 
     @Override
@@ -77,13 +91,16 @@ public class WorkOrderServiceImpl implements IWorkService {
     public WorkOrder complete(Long id, String log) {
         WorkOrder w = findById(id);
         w.complete(log);
+        WorkOrder response = repo.save(w);
+        String user = getCurrentUser();
+        noteService.addSystemNote(response, noteFormatter.completed(log, response.getCompletedAt(), user), user);
         logService.log(
                 "WORK_ORDER_COMPLETED",
                 "WORK_ORDER",
                 w.getId(),
                 String.format("OS finalizada por %s ", getCurrentUser())
         );
-        return repo.save(w);
+        return response;
     }
 
     @Override
@@ -91,13 +108,16 @@ public class WorkOrderServiceImpl implements IWorkService {
     public WorkOrder cancel(Long id, String reason) {
         WorkOrder w = findById(id);
         w.cancel(reason);
+        WorkOrder response = repo.save(w);
+        String user = getCurrentUser();
+        noteService.addSystemNote(response, noteFormatter.cancelled(reason, user), user);
         logService.log(
                 "WORK_ORDER_CANCELLED",
                 "WORK_ORDER",
                 w.getId(),
                 String.format("OS cancelada por %s ", getCurrentUser())
         );
-        return repo.save(w);
+        return response;
     }
 
     @Override
@@ -110,5 +130,21 @@ public class WorkOrderServiceImpl implements IWorkService {
     @Transactional(readOnly = true)
     public WorkOrder findById(Long id) {
         return repo.findById(id).orElseThrow(() -> new NotFoundException("OS não encontrada."));
+    }
+
+    @Override
+    @Transactional
+    public WorkOrder addNote(Long id, String message) {
+        WorkOrder w = findById(id);
+        WorkOrder response = repo.save(w);
+        String user = getCurrentUser();
+        noteService.addNote(w, noteFormatter.format(message, user), user);
+        logService.log(
+                "WORK_ORDER_NOTE_ADDED",
+                "WORK_ORDER_NOTE",
+                w.getId(),
+                String.format("Nota adicionada por %s (OS #%s)", getCurrentUser(), id)
+        );
+        return response;
     }
 }

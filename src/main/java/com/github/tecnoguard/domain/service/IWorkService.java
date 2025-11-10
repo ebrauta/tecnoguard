@@ -21,4 +21,6 @@ public interface IWorkService {
     Page<WorkOrder> list(Pageable pageable);
 
     WorkOrder findById(Long id);
+
+    WorkOrder addNote(Long id, String msg);
 }
