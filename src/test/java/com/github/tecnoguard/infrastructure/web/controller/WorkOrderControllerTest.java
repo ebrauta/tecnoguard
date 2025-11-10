@@ -4,21 +4,30 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tecnoguard.application.dtos.auth.request.LoginDTO;
 import com.github.tecnoguard.application.dtos.auth.response.LoginResponseDTO;
+import com.github.tecnoguard.application.dtos.workorder.request.AddNoteWO;
 import com.github.tecnoguard.application.dtos.workorder.request.AssignWO;
 import com.github.tecnoguard.application.dtos.workorder.request.CancelWO;
 import com.github.tecnoguard.application.dtos.workorder.request.CompleteWO;
+import com.github.tecnoguard.core.utils.NoteFormatter;
 import com.github.tecnoguard.domain.enums.UserRole;
 import com.github.tecnoguard.domain.enums.WOStatus;
 import com.github.tecnoguard.domain.enums.WOType;
 import com.github.tecnoguard.domain.models.User;
 import com.github.tecnoguard.domain.models.WorkOrder;
+import com.github.tecnoguard.domain.models.WorkOrderNote;
+import com.github.tecnoguard.domain.service.IWorkOrderNoteService;
+import com.github.tecnoguard.domain.service.IWorkService;
 import com.github.tecnoguard.infrastructure.persistence.UserRepository;
+import com.github.tecnoguard.infrastructure.persistence.WorkOrderNoteRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -27,6 +36,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -43,11 +53,18 @@ class WorkOrderControllerTest {
     @Autowired
     private ObjectMapper mapper;
 
+    @Autowired
+    private IWorkService service;
+    @Autowired
+    private IWorkOrderNoteService noteService;
+    @Autowired
+    private NoteFormatter formatter;
+
     private WorkOrder order;
     private AssignWO assignDTO;
     private CompleteWO completeDTO;
     private CancelWO cancelDTO;
-
+    private AddNoteWO noteDTO;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -60,6 +77,7 @@ class WorkOrderControllerTest {
         assignDTO = new AssignWO("Técnico 1", LocalDate.of(2025, 10, 15));
         completeDTO = new CompleteWO("Serviço concluído com sucesso");
         cancelDTO = new CancelWO("Equipamento já substituído");
+        noteDTO = new AddNoteWO("Teste de log via controller");
     }
 
     private long createWorkOrder() throws Exception {
@@ -205,5 +223,45 @@ class WorkOrderControllerTest {
     void shouldRejectUnauthorizedAccess() throws Exception {
         mockMvc.perform(get("/api/workorders"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Controller - Deve listar notas da OS via GET /log/{id}")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void shouldListLogsForWorkOrder() throws Exception {
+        WorkOrder wo = service.findById(createWorkOrder());
+
+        noteService.addNote(wo, "Nota 1", "Maria");
+        noteService.addNote(wo, "Nota 2", "João");
+
+        var result = mockMvc.perform(get("/api/workorders/log/{id}", wo.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(3))
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        Assertions.assertTrue(content.contains("Nota 1"));
+        Assertions.assertTrue(content.contains("Nota 2"));
+    }
+
+    @Test
+    @DisplayName("Controller - Deve adicionar uma nota à OS via POST /log/{id}")
+    @WithMockUser(username = "eduardo", roles = {"ADMIN"})
+    void shouldAddLogToWorkOrder() throws Exception {
+        WorkOrder wo = service.findById(createWorkOrder());
+
+        var result = mockMvc.perform(post("/api/workorders/log/{id}", wo.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(noteDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.author").value("eduardo"))
+                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("Teste de log")))
+                .andReturn();
+
+        List<WorkOrderNote> notes = noteService.listNotes(wo.getId(), null).getContent();
+        Assertions.assertEquals(2, notes.size());
+        Assertions.assertEquals("eduardo", notes.getFirst().getAuthor());
+        Assertions.assertTrue(notes.getFirst().getMessage().contains(formatter.format("Teste de log via controller", "eduardo")));
     }
 }
