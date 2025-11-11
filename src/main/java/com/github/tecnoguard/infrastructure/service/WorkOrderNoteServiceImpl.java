@@ -34,8 +34,4 @@ public class WorkOrderNoteServiceImpl implements IWorkOrderNoteService {
         return repo.save(note);
     }
 
-    @Override
-    public WorkOrderNote addSystemNote(WorkOrder wo, String message, String author) {
-        return addNote(wo, message, author);
-    }
 }

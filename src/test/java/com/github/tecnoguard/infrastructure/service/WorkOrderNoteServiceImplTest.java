@@ -66,7 +66,7 @@ class WorkOrderNoteServiceImplTest {
     void shouldAddSystemNote() {
         String message = "OS criada automaticamente";
         String author = "SYSTEM";
-        service.addSystemNote(workOrder, message, author);
+        service.addNote(workOrder, message, author);
         List<WorkOrderNote> notes = repo.findAll();
         assertEquals(2, notes.size());
         assertTrue(notes.get(1).getMessage().contains("[SYSTEM]"));

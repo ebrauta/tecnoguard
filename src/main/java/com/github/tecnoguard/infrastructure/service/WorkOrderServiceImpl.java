@@ -42,7 +42,7 @@ public class WorkOrderServiceImpl implements IWorkService {
         order.create();
         WorkOrder response = repo.save(order);
         String user = getCurrentUser();
-        noteService.addSystemNote(response,noteFormatter.created(user), user);
+        noteService.addNote(response,noteFormatter.created(user), "SYSTEM");
         logService.log(
                 "WORK_ORDER_CREATED",
                 "WORK_ORDER",
@@ -59,7 +59,7 @@ public class WorkOrderServiceImpl implements IWorkService {
         w.assign(tech, date);
         WorkOrder response = repo.save(w);
         String user = getCurrentUser();
-        noteService.addSystemNote(response, noteFormatter.assigned(tech, date, user), user);
+        noteService.addNote(response, noteFormatter.assigned(tech, date, user), "SYSTEM");
         logService.log(
                 "WORK_ORDER_ASSIGNED",
                 "WORK_ORDER",
@@ -76,7 +76,7 @@ public class WorkOrderServiceImpl implements IWorkService {
         w.start();
         WorkOrder response = repo.save(w);
         String user = getCurrentUser();
-        noteService.addSystemNote(w, noteFormatter.started(user), user);
+        noteService.addNote(w, noteFormatter.started(user), "SYSTEM");
         logService.log(
                 "WORK_ORDER_STARTED",
                 "WORK_ORDER",
@@ -93,7 +93,7 @@ public class WorkOrderServiceImpl implements IWorkService {
         w.complete(log);
         WorkOrder response = repo.save(w);
         String user = getCurrentUser();
-        noteService.addSystemNote(response, noteFormatter.completed(log, response.getCompletedAt(), user), user);
+        noteService.addNote(response, noteFormatter.completed(log, response.getCompletedAt(), user), "SYSTEM");
         logService.log(
                 "WORK_ORDER_COMPLETED",
                 "WORK_ORDER",
@@ -110,7 +110,7 @@ public class WorkOrderServiceImpl implements IWorkService {
         w.cancel(reason);
         WorkOrder response = repo.save(w);
         String user = getCurrentUser();
-        noteService.addSystemNote(response, noteFormatter.cancelled(reason, user), user);
+        noteService.addNote(response, noteFormatter.cancelled(reason, user), "SYSTEM");
         logService.log(
                 "WORK_ORDER_CANCELLED",
                 "WORK_ORDER",

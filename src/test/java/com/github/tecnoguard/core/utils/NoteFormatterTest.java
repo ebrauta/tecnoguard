@@ -45,34 +45,36 @@ class NoteFormatterTest {
     void shouldGenerateCreatedMessage() {
         String result = formatter.created("Carlos");
         assertTrue(result.contains("OS criada por Carlos"));
-        assertTrue(result.contains("[SYSTEM]"));
     }
 
     @Test
     @DisplayName("Deve gerar mensagem de agendamento corretamente")
     void shouldGenerateAssignedMessage() {
         LocalDate date = LocalDate.of(2025, 10, 15);
-        String result = formatter.assigned("Técnico 1", date, "João");
-        assertTrue(result.contains("OS agendada para o técnico Técnico 1"));
-        assertTrue(result.contains("15/10/2025"));
+        String result = formatter.assigned("José", date, "João");
+        assertTrue(result.contains("OS agendada para o técnico José no dia 15/10/2025 por João"));
+    }
+
+    @Test
+    @DisplayName("Deve gerar mensagem de iniciação corretamente")
+    void shouldGenerateStartedMessage() {
+        String result = formatter.started("José");
+        assertTrue(result.contains("OS iniciada por José"));
     }
 
     @Test
     @DisplayName("Deve gerar mensagem de conclusão corretamente")
     void shouldGenerateCompletedMessage() {
         LocalDateTime date = LocalDateTime.of(2025, 10, 15, 14, 30);
-        String result = formatter.completed("Tudo ok", date, "Ana");
+        String result = formatter.completed("Tudo ok", date, "José");
 
-        assertTrue(result.contains("Conclusão de Ana"));
-        assertTrue(result.contains("Tudo ok"));
-        assertTrue(result.contains("15/10/2025"));
+        assertTrue(result.contains("Conclusão de José [15/10/2025 14:30] : Tudo ok"));
     }
 
     @Test
     @DisplayName("Deve gerar mensagem de cancelamento corretamente")
     void shouldGenerateCancelledMessage() {
         String result = formatter.cancelled("Falta de peças", "Carlos");
-        assertTrue(result.contains("OS cancelada por Carlos"));
-        assertTrue(result.contains("Motivo: Falta de peças"));
+        assertTrue(result.contains("OS cancelada por Carlos - Motivo: Falta de peças"));
     }
 }
