@@ -1,11 +1,11 @@
 package com.github.tecnoguard.infrastructure.web.controller;
 
 import com.github.tecnoguard.application.dtos.workorder.request.*;
-import com.github.tecnoguard.application.dtos.workorder.response.FullResponseWO;
-import com.github.tecnoguard.application.dtos.workorder.response.WorkOrderNoteDTO;
+import com.github.tecnoguard.application.dtos.workorder.response.*;
 import com.github.tecnoguard.application.mappers.workorder.WorkOrderMapper;
 import com.github.tecnoguard.application.mappers.workorder.WorkOrderNoteMapper;
 import com.github.tecnoguard.core.shared.PageDTO;
+import com.github.tecnoguard.domain.enums.WOStatus;
 import com.github.tecnoguard.domain.models.WorkOrder;
 import com.github.tecnoguard.domain.models.WorkOrderNote;
 import com.github.tecnoguard.domain.service.IWorkOrderNoteService;
@@ -13,18 +13,14 @@ import com.github.tecnoguard.domain.service.IWorkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "Work Orders - Ordens de Serviço", description = "Gestão do ciclo de vida das Ordens de Serviço")
 @RestController
@@ -33,21 +29,33 @@ public class WorkOrderController {
 
     private final IWorkService service;
     private final IWorkOrderNoteService noteService;
-    private final WorkOrderMapper mapper = new WorkOrderMapper();
+    private final WorkOrderMapper mapper;
     private final WorkOrderNoteMapper noteMapper = new WorkOrderNoteMapper();
 
-    public WorkOrderController(IWorkService service, IWorkOrderNoteService noteService) {
+    public WorkOrderController(IWorkService service, IWorkOrderNoteService noteService, WorkOrderMapper mapper) {
         this.service = service;
         this.noteService = noteService;
+        this.mapper = mapper;
+    }
+
+    private Object typeResponse(WorkOrder wo){
+        return switch (wo.getStatus()) {
+            case OPEN -> mapper.entityToCreateResponse(wo);
+            case SCHEDULED -> mapper.entityToAssignResponse(wo);
+            case IN_PROGRESS -> mapper.entityToStartResponse(wo);
+            case COMPLETED -> mapper.entityToCompleteResponse(wo);
+            case CANCELLED -> mapper.entityToCancelResponse(wo);
+            default -> null;
+        };
     }
 
     @Operation(summary = "Listar todas", description = "Lista todas as OS.")
     @GetMapping
-    public ResponseEntity<PageDTO<FullResponseWO>> list(
+    public ResponseEntity<PageDTO<?>> list(
             @PageableDefault(size = 10, sort = "equipment", direction = Sort.Direction.ASC)
             Pageable pageable
     ) {
-        Page<FullResponseWO> page = service.list(pageable).map(mapper::fromEntityToFullDTO);
+        Page<?> page = service.list(pageable).map(this::typeResponse);
         return ResponseEntity.status(HttpStatus.OK).body(new PageDTO<>(page));
     }
 
@@ -81,56 +89,61 @@ public class WorkOrderController {
 
     @Operation(summary = "Detalhar OS", description = "Mostra detalhes da OS.\nCampo obrigatório: id")
     @GetMapping("/{id}")
-    public ResponseEntity<FullResponseWO> get(@PathVariable Long id) {
+    public ResponseEntity<?> get(@PathVariable Long id) {
         WorkOrder wo = service.findById(id);
-        FullResponseWO response = mapper.fromEntityToFullDTO(wo);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        Object responseBody = typeResponse(wo);
+        if (responseBody != null) {
+            return ResponseEntity.ok(responseBody);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @Operation(summary = "Criar nova OS", description = "Cria uma nova OS.\nCampos obrigatórios: descrição, equipamento, cliente e tipo")
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'PLANNER', 'OPERATOR')")
-    public ResponseEntity<FullResponseWO> create(@RequestBody CreateWO dto) {
-        WorkOrder wo = mapper.fromCreateToEntity(dto);
+    public ResponseEntity<CreateResponse> create(@RequestBody CreateRequest dto) {
+        WorkOrder wo = mapper.createRequestToEntity(dto);
         WorkOrder created = service.create(wo);
-        FullResponseWO response = mapper.fromEntityToFullDTO(created);
+        CreateResponse response = mapper.entityToCreateResponse(created);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(summary = "Agendar OS", description = "Faz o agendamento de uma OS.\nCampos obrigatórios: id, tecnico e data")
     @PatchMapping("/assign/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'PLANNER')")
-    public ResponseEntity<FullResponseWO> assign(@PathVariable Long id,
-                                                 @RequestBody AssignWO dto) {
+    public ResponseEntity<AssignResponse> assign(@PathVariable Long id,
+                                                 @RequestBody AssignRequest dto) {
+
         WorkOrder assigned = service.assign(id, dto.tech(), dto.date());
-        FullResponseWO response = mapper.fromEntityToFullDTO(assigned);
+        AssignResponse response = mapper.entityToAssignResponse(assigned);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @Operation(summary = "Iniciar Serviço", description = "Inicia o serviço de uma OS.\nCampos obrigatórios: id")
     @PatchMapping("/start/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
-    public ResponseEntity<FullResponseWO> start(@PathVariable Long id) {
+    public ResponseEntity<StartResponse> start(@PathVariable Long id) {
         WorkOrder started = service.start(id);
-        FullResponseWO response = mapper.fromEntityToFullDTO(started);
+        StartResponse response = mapper.entityToStartResponse(started);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @Operation(summary = "Terminar Serviço", description = "Finaliza o serviço de uma OS.\nCampos obrigatórios: id e log(resumo) ")
     @PatchMapping("/complete/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR', 'TECHNICIAN')")
-    public ResponseEntity<FullResponseWO> complete(@PathVariable Long id, @RequestBody CompleteWO dto) {
+    public ResponseEntity<CompleteResponse> complete(@PathVariable Long id, @RequestBody CompleteRequest dto) {
         WorkOrder completed = service.complete(id, dto.log());
-        FullResponseWO response = mapper.fromEntityToFullDTO(completed);
+        CompleteResponse response = mapper.entityToCompleteResponse(completed);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @Operation(summary = "Cancelar Serviço", description = "Cancela uma OS.\nCampos obrigatórios: id e motivo ")
     @PatchMapping("/cancel/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR')")
-    public ResponseEntity<FullResponseWO> cancel(@PathVariable Long id, @RequestBody CancelWO dto) {
+    public ResponseEntity<CancelResponse> cancel(@PathVariable Long id, @RequestBody CancelWO dto) {
         WorkOrder cancelled = service.cancel(id, dto.reason());
-        FullResponseWO response = mapper.fromEntityToFullDTO(cancelled);
+        CancelResponse response = mapper.entityToCancelResponse(cancelled);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

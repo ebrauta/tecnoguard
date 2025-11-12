@@ -20,7 +20,7 @@ class NoteFormatterTest {
     }
 
     @Test
-    @DisplayName("Deve formatar mensagem com data, hora e autor")
+    @DisplayName("NoteFormatter - Deve formatar mensagem com data, hora e autor")
     void shouldFormatMessage() {
         String msg = "OS criada";
         String author = "João";
@@ -33,7 +33,7 @@ class NoteFormatterTest {
     }
 
     @Test
-    @DisplayName("Deve usar SYSTEM como autor quando nulo")
+    @DisplayName("NoteFormatter - Deve usar SYSTEM como autor quando nulo")
     void shouldUseSystemAsDefaultAuthor() {
         String msg = "Mensagem genérica";
         String result = formatter.format(msg, null);
@@ -41,14 +41,14 @@ class NoteFormatterTest {
     }
 
     @Test
-    @DisplayName("Deve gerar mensagem de criação corretamente")
+    @DisplayName("NoteFormatter - Deve gerar mensagem de criação corretamente")
     void shouldGenerateCreatedMessage() {
         String result = formatter.created("Carlos");
         assertTrue(result.contains("OS criada por Carlos"));
     }
 
     @Test
-    @DisplayName("Deve gerar mensagem de agendamento corretamente")
+    @DisplayName("NoteFormatter - Deve gerar mensagem de agendamento corretamente")
     void shouldGenerateAssignedMessage() {
         LocalDate date = LocalDate.of(2025, 10, 15);
         String result = formatter.assigned("José", date, "João");
@@ -56,14 +56,14 @@ class NoteFormatterTest {
     }
 
     @Test
-    @DisplayName("Deve gerar mensagem de iniciação corretamente")
+    @DisplayName("NoteFormatter - Deve gerar mensagem de iniciação corretamente")
     void shouldGenerateStartedMessage() {
         String result = formatter.started("José");
         assertTrue(result.contains("OS iniciada por José"));
     }
 
     @Test
-    @DisplayName("Deve gerar mensagem de conclusão corretamente")
+    @DisplayName("NoteFormatter - Deve gerar mensagem de conclusão corretamente")
     void shouldGenerateCompletedMessage() {
         LocalDateTime date = LocalDateTime.of(2025, 10, 15, 14, 30);
         String result = formatter.completed("Tudo ok", date, "José");
@@ -72,7 +72,7 @@ class NoteFormatterTest {
     }
 
     @Test
-    @DisplayName("Deve gerar mensagem de cancelamento corretamente")
+    @DisplayName("NoteFormatter - Deve gerar mensagem de cancelamento corretamente")
     void shouldGenerateCancelledMessage() {
         String result = formatter.cancelled("Falta de peças", "Carlos");
         assertTrue(result.contains("OS cancelada por Carlos - Motivo: Falta de peças"));

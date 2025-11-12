@@ -1,24 +1,21 @@
 package com.github.tecnoguard.infrastructure.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tecnoguard.application.dtos.auth.request.LoginDTO;
-import com.github.tecnoguard.application.dtos.auth.response.LoginResponseDTO;
 import com.github.tecnoguard.application.dtos.workorder.request.AddNoteWO;
-import com.github.tecnoguard.application.dtos.workorder.request.AssignWO;
+import com.github.tecnoguard.application.dtos.workorder.request.AssignRequest;
 import com.github.tecnoguard.application.dtos.workorder.request.CancelWO;
-import com.github.tecnoguard.application.dtos.workorder.request.CompleteWO;
+import com.github.tecnoguard.application.dtos.workorder.request.CompleteRequest;
 import com.github.tecnoguard.core.utils.NoteFormatter;
-import com.github.tecnoguard.domain.enums.UserRole;
+import com.github.tecnoguard.domain.enums.WOPriority;
 import com.github.tecnoguard.domain.enums.WOStatus;
 import com.github.tecnoguard.domain.enums.WOType;
-import com.github.tecnoguard.domain.models.User;
 import com.github.tecnoguard.domain.models.WorkOrder;
 import com.github.tecnoguard.domain.models.WorkOrderNote;
 import com.github.tecnoguard.domain.service.IWorkOrderNoteService;
 import com.github.tecnoguard.domain.service.IWorkService;
-import com.github.tecnoguard.infrastructure.persistence.UserRepository;
-import com.github.tecnoguard.infrastructure.persistence.WorkOrderNoteRepository;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,19 +23,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,21 +54,21 @@ class WorkOrderControllerTest {
     private NoteFormatter formatter;
 
     private WorkOrder order;
-    private AssignWO assignDTO;
-    private CompleteWO completeDTO;
+    private AssignRequest assignDTO;
+    private CompleteRequest completeDTO;
     private CancelWO cancelDTO;
     private AddNoteWO noteDTO;
 
     @BeforeEach
     void setUp() throws Exception {
-        order = new WorkOrder(
-                "Trocar motor",
-                "Bomba 3",
-                "Cliente X",
-                WOType.CORRETIVA);
+        order = new WorkOrder();
+        order.setDescription("Trocar motor");
+        order.setEquipment("Bomba 3");
+        order.setClient("Cliente X");
+        order.setType(WOType.CORRETIVA);
 
-        assignDTO = new AssignWO("Técnico 1", LocalDate.of(2025, 10, 15));
-        completeDTO = new CompleteWO("Serviço concluído com sucesso");
+        assignDTO = new AssignRequest("Técnico 1", LocalDate.of(2025, 10, 15));
+        completeDTO = new CompleteRequest("Serviço concluído com sucesso");
         cancelDTO = new CancelWO("Equipamento já substituído");
         noteDTO = new AddNoteWO("Teste de log via controller");
     }
@@ -139,9 +132,9 @@ class WorkOrderControllerTest {
         long id = createWorkOrder();
 
         mockMvc.perform(
-                patch("/api/workorders/assign/{id}", id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(assignDTO))
+                        patch("/api/workorders/assign/{id}", id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(assignDTO))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.assignedTechnician").value("Técnico 1"))
@@ -157,13 +150,13 @@ class WorkOrderControllerTest {
         long id = createWorkOrder();
 
         mockMvc.perform(patch("/api/workorders/assign/{id}", id)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(mapper.writeValueAsString(assignDTO))
-                        )
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(assignDTO))
+                )
                 .andExpect(status().isOk());
 
         mockMvc.perform(patch("/api/workorders/start/{id}", id)
-                        )
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
     }
@@ -200,19 +193,19 @@ class WorkOrderControllerTest {
         long id = createWorkOrder();
 
         mockMvc.perform(patch("/api/workorders/assign/{id}", id)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(mapper.writeValueAsString(assignDTO))
-                        )
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(assignDTO))
+                )
                 .andExpect(status().isOk());
 
         mockMvc.perform(patch("/api/workorders/start/{id}", id)
-                        )
+                )
                 .andExpect(status().isOk());
 
         mockMvc.perform(patch("/api/workorders/cancel/{id}", id)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(mapper.writeValueAsString(cancelDTO))
-                        )
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(cancelDTO))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("CANCELLED"))
                 .andExpect(jsonPath("$.cancelReason").value("Equipamento já substituído"));
@@ -226,7 +219,7 @@ class WorkOrderControllerTest {
     }
 
     @Test
-    @DisplayName("Controller - Deve listar notas da OS via GET /log/{id}")
+    @DisplayName("WorkOrderController - Deve listar notas da OS via GET /log/{id}")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldListLogsForWorkOrder() throws Exception {
         WorkOrder wo = service.findById(createWorkOrder());
@@ -246,7 +239,7 @@ class WorkOrderControllerTest {
     }
 
     @Test
-    @DisplayName("Controller - Deve adicionar uma nota à OS via POST /log/{id}")
+    @DisplayName("WorkOrderController - Deve adicionar uma nota à OS via POST /log/{id}")
     @WithMockUser(username = "eduardo", roles = {"ADMIN"})
     void shouldAddLogToWorkOrder() throws Exception {
         WorkOrder wo = service.findById(createWorkOrder());

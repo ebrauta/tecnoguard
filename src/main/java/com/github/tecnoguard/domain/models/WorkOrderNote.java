@@ -2,7 +2,6 @@ package com.github.tecnoguard.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.tecnoguard.domain.shared.models.AuditableEntity;
-import com.github.tecnoguard.domain.shared.models.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

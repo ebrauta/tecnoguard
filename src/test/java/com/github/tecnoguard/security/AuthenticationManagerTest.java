@@ -41,7 +41,7 @@ class AuthenticationManagerTest {
     }
 
     @Test
-    @DisplayName("Deve autenticar usuário válido com senha correta")
+    @DisplayName("AuthManager - NDeve autenticar usuário válido com senha correta")
     void shouldAuthenticateValidUser() {
         Authentication request = new UsernamePasswordAuthenticationToken("admin", "1234");
 

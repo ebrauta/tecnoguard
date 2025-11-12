@@ -35,16 +35,16 @@ class WorkOrderNoteServiceImplTest {
     @BeforeEach
     void setUp() {
         repo.deleteAll();
-        WorkOrder created = new WorkOrder(
-                "Trocar motor",
-                "Bomba 3",
-                "Cliente X",
-                WOType.CORRETIVA);
+        WorkOrder created =  new WorkOrder();
+        created.setDescription("Trocar motor");
+        created.setEquipment("Bomba 3");
+        created.setClient("Cliente X");
+        created.setType(WOType.CORRETIVA);
         workOrder = woService.create(created);
     }
 
     @Test
-    @DisplayName("Deve adicionar uma nota formatada corretamente à OS e persistir no banco")
+    @DisplayName("WorkOrderNoteService - Deve adicionar uma nota formatada corretamente à OS e persistir no banco")
     void shouldAddFormmatedNoteAndPersist() {
         String message = "Serviço iniciado";
         String author = "João";
@@ -62,7 +62,7 @@ class WorkOrderNoteServiceImplTest {
     }
 
     @Test
-    @DisplayName("Deve adicionar nota do sistema")
+    @DisplayName("WorkOrderNoteService - Deve adicionar nota do sistema")
     void shouldAddSystemNote() {
         String message = "OS criada automaticamente";
         String author = "SYSTEM";
@@ -73,7 +73,7 @@ class WorkOrderNoteServiceImplTest {
     }
 
     @Test
-    @DisplayName("Deve adicionar múltiplas notas na mesma OS")
+    @DisplayName("WorkOrderNoteService - Deve adicionar múltiplas notas na mesma OS")
     void shouldAddMultipleNotes() {
         service.addNote(workOrder, "OS criada", "Maria");
         service.addNote(workOrder, "Técnico atribuído", "Carlos");

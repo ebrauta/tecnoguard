@@ -4,7 +4,7 @@ import com.github.tecnoguard.domain.enums.WOType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record CreateWO(
+public record CreateRequest(
         @NotBlank(message = "Descrição é obrigatória") String description,
         @NotBlank(message = "Equipamento é obrigatório") String equipment,
         @NotBlank(message = "Cliente é obrigatório") String client,

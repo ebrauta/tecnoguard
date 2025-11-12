@@ -1,29 +1,27 @@
 package com.github.tecnoguard.domain.models;
 
 import com.github.tecnoguard.core.exceptions.BusinessException;
-import com.github.tecnoguard.core.utils.NoteFormatter;
+import com.github.tecnoguard.domain.enums.WOPriority;
 import com.github.tecnoguard.domain.enums.WOStatus;
 import com.github.tecnoguard.domain.enums.WOType;
 import com.github.tecnoguard.domain.shared.models.AuditableEntity;
-import com.github.tecnoguard.domain.shared.models.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "tb_workorder")
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
+@Setter
 public class WorkOrder extends AuditableEntity {
 
     private String description;
@@ -39,21 +37,14 @@ public class WorkOrder extends AuditableEntity {
 
     private String assignedTechnician;
     private LocalDate scheduledDate;
-    private LocalDateTime completedAt;
 
+    private LocalDateTime openingDate;
+    private LocalDateTime closeningDate;
+
+    private LocalDateTime cancelDate;
     private String cancelReason;
 
-    public WorkOrder(
-            String description,
-            String equipment,
-            String client,
-            WOType type) {
-        this.description = description;
-        this.equipment = equipment;
-        this.client = client;
-        this.type = type;
-
-    }
+    private WOPriority priority;
 
     public void create() {
         this.status = WOStatus.OPEN;
@@ -69,18 +60,20 @@ public class WorkOrder extends AuditableEntity {
     public void start() {
         if (this.status != WOStatus.SCHEDULED) throw new BusinessException("Somente OS agendadas podem ser iniciadas");
         this.status = WOStatus.IN_PROGRESS;
+        this.openingDate = LocalDateTime.now();
     }
 
     public void complete(String log) {
         if (this.status != WOStatus.IN_PROGRESS)
             throw new BusinessException("Somente OS em andamento podem ser concluídas.");
         this.status = WOStatus.COMPLETED;
-        this.completedAt = LocalDateTime.now();
+        this.closeningDate = LocalDateTime.now();
     }
 
     public void cancel(String reason) {
         if (this.status == WOStatus.COMPLETED) throw new BusinessException("OS concluídas não podem ser canceladas.");
         this.cancelReason = reason;
+        this.cancelDate = LocalDateTime.now();
         this.status = WOStatus.CANCELLED;
     }
 }

@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
-public record AssignWO(
+public record AssignRequest(
         @NotBlank(message = "Nome do técnico é obrigatório") String tech,
         @NotNull(message = "Data de agendamento é obrigatória") LocalDate date
 ) {

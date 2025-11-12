@@ -30,17 +30,16 @@ class WorkOrderServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        order = new WorkOrder(
-                "Trocar motor",
-                "Bomba 3",
-                "Cliente X",
-                WOType.CORRETIVA);
-        order2 = new WorkOrder(
-                "Trocar eixo",
-                "Bomba 3",
-                "Cliente X",
-                WOType.CORRETIVA
-        );
+        order = new WorkOrder();
+        order.setDescription("Trocar motor");
+        order.setEquipment("Bomba 3");
+        order.setClient("Cliente X");
+        order.setType(WOType.CORRETIVA);
+        order2 = new WorkOrder();
+        order2.setDescription("Trocar eixo");
+        order2.setEquipment("Bomba 3");
+        order2.setClient("Cliente X");
+        order2.setType(WOType.CORRETIVA);
     }
 
     @Test
@@ -136,12 +135,12 @@ class WorkOrderServiceImplTest {
     @DisplayName("WorkOrderService - Deve respeitar limite de página")
     void shouldReturnLimitedPage() {
         IntStream.rangeClosed(1, 5).forEach(i -> {
-            service.create(new WorkOrder(
-                    "OS " + i,
-                    "Equipamento" + i,
-                    "Cliente " + i,
-                    WOType.CORRETIVA
-            ));
+            var orderTest = new WorkOrder();
+            orderTest.setDescription("OS " + i);
+            orderTest.setEquipment("Equipamento "+ i);
+            orderTest.setClient("Cliente " + i);
+            orderTest.setType(WOType.CORRETIVA);
+            service.create(orderTest);
         });
 
         Pageable pageable = PageRequest.of(0, 2);

@@ -93,7 +93,7 @@ public class WorkOrderServiceImpl implements IWorkService {
         w.complete(log);
         WorkOrder response = repo.save(w);
         String user = getCurrentUser();
-        noteService.addNote(response, noteFormatter.completed(log, response.getCompletedAt(), user), "SYSTEM");
+        noteService.addNote(response, noteFormatter.completed(log, response.getOpeningDate(), user), "SYSTEM");
         logService.log(
                 "WORK_ORDER_COMPLETED",
                 "WORK_ORDER",

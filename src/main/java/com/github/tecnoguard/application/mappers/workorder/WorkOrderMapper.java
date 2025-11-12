@@ -1,27 +1,19 @@
 package com.github.tecnoguard.application.mappers.workorder;
 
-import com.github.tecnoguard.application.dtos.workorder.request.CreateWO;
-import com.github.tecnoguard.application.dtos.workorder.response.FullResponseWO;
+import com.github.tecnoguard.application.dtos.workorder.request.AssignRequest;
+import com.github.tecnoguard.application.dtos.workorder.request.CreateRequest;
+import com.github.tecnoguard.application.dtos.workorder.response.*;
 import com.github.tecnoguard.domain.models.WorkOrder;
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
-public class WorkOrderMapper {
-    public FullResponseWO fromEntityToFullDTO(WorkOrder wo) {
-        return new FullResponseWO(
-                wo.getId(),
-                wo.getDescription(),
-                wo.getEquipment(),
-                wo.getClient(),
-                wo.getAssignedTechnician(),
-                wo.getScheduledDate(),
-                wo.getType(),
-                wo.getStatus(),
-                wo.getCancelReason(),
-                wo.getCompletedAt()
-        );
-    }
+@Mapper(componentModel = "spring")
+public interface WorkOrderMapper {
+    WorkOrder createRequestToEntity(CreateRequest dto);
+    CreateResponse entityToCreateResponse(WorkOrder entity);
 
-    public WorkOrder fromCreateToEntity(CreateWO dto) {
-        return new WorkOrder(dto.description(), dto.equipment(), dto.client(), dto.type());
-    }
-
+    AssignResponse entityToAssignResponse(WorkOrder entity);
+    StartResponse entityToStartResponse(WorkOrder entity);
+    CompleteResponse entityToCompleteResponse(WorkOrder entity);
+    CancelResponse entityToCancelResponse(WorkOrder entity);
 }
