@@ -1,5 +1,6 @@
 package com.github.tecnoguard.application.dtos.workorder.response;
 
+import com.github.tecnoguard.domain.enums.WOPriority;
 import com.github.tecnoguard.domain.enums.WOStatus;
 import com.github.tecnoguard.domain.enums.WOType;
 
@@ -11,7 +12,8 @@ public record CompleteResponse(
         String equipment,
         String client,
         WOType type,
-        LocalDateTime closeningDate,
+        WOPriority priority,
+        LocalDateTime closingDate,
         WOStatus status
 ) {
 }

@@ -12,10 +12,10 @@ public abstract class AuditableEntity extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "created_by_id")
     @CreatedBy
-    private User createdBy;
+    protected User createdBy;
 
     @ManyToOne
     @JoinColumn(name = "updated_by_id")
     @LastModifiedBy
-    private User updatedBy;
+    protected User updatedBy;
 }

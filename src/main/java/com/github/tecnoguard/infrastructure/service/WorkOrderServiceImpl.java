@@ -88,12 +88,12 @@ public class WorkOrderServiceImpl implements IWorkService {
 
     @Override
     @Transactional
-    public WorkOrder complete(Long id, String log) {
+    public WorkOrder complete(Long id, String summary) {
         WorkOrder w = findById(id);
-        w.complete(log);
+        w.complete();
         WorkOrder response = repo.save(w);
         String user = getCurrentUser();
-        noteService.addNote(response, noteFormatter.completed(log, response.getOpeningDate(), user), "SYSTEM");
+        noteService.addNote(response, noteFormatter.completed(summary, response.getOpeningDate(), user), "SYSTEM");
         logService.log(
                 "WORK_ORDER_COMPLETED",
                 "WORK_ORDER",

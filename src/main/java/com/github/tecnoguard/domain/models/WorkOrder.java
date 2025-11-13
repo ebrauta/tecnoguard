@@ -1,6 +1,7 @@
 package com.github.tecnoguard.domain.models;
 
 import com.github.tecnoguard.core.exceptions.BusinessException;
+import com.github.tecnoguard.domain.enums.UserRole;
 import com.github.tecnoguard.domain.enums.WOPriority;
 import com.github.tecnoguard.domain.enums.WOStatus;
 import com.github.tecnoguard.domain.enums.WOType;
@@ -34,24 +35,27 @@ public class WorkOrder extends AuditableEntity {
 
     private WOStatus status;
     private WOType type;
+    private WOPriority priority;
 
     private String assignedTechnician;
     private LocalDate scheduledDate;
 
     private LocalDateTime openingDate;
-    private LocalDateTime closeningDate;
-
+    private LocalDateTime startDate;
+    private LocalDateTime closingDate;
     private LocalDateTime cancelDate;
+
     private String cancelReason;
 
-    private WOPriority priority;
 
     public void create() {
         this.status = WOStatus.OPEN;
+        this.openingDate = LocalDateTime.now();
     }
 
     public void assign(String technician, LocalDate date) {
         if (this.status != WOStatus.OPEN) throw new BusinessException("Somente OS abertas podem ser agendadas.");
+        if (date.isBefore(LocalDate.now())) throw new BusinessException("A data de agendamento não pode ser anterior a data atual");
         this.assignedTechnician = technician;
         this.scheduledDate = date;
         this.status = WOStatus.SCHEDULED;
@@ -60,14 +64,14 @@ public class WorkOrder extends AuditableEntity {
     public void start() {
         if (this.status != WOStatus.SCHEDULED) throw new BusinessException("Somente OS agendadas podem ser iniciadas");
         this.status = WOStatus.IN_PROGRESS;
-        this.openingDate = LocalDateTime.now();
+        this.startDate = LocalDateTime.now();
     }
 
-    public void complete(String log) {
+    public void complete() {
         if (this.status != WOStatus.IN_PROGRESS)
             throw new BusinessException("Somente OS em andamento podem ser concluídas.");
         this.status = WOStatus.COMPLETED;
-        this.closeningDate = LocalDateTime.now();
+        this.closingDate = LocalDateTime.now();
     }
 
     public void cancel(String reason) {
