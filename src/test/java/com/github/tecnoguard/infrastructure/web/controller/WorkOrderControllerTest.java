@@ -13,9 +13,6 @@ import com.github.tecnoguard.domain.models.WorkOrder;
 import com.github.tecnoguard.domain.models.WorkOrderNote;
 import com.github.tecnoguard.domain.service.IWorkOrderNoteService;
 import com.github.tecnoguard.domain.service.IWorkService;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,8 +25,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -65,9 +60,10 @@ class WorkOrderControllerTest {
         order.setDescription("Trocar motor");
         order.setEquipment("Bomba 3");
         order.setClient("Cliente X");
-        order.setType(WOType.CORRETIVA);
+        order.setType(WOType.CORRECTIVE);
+        order.setPriority(WOPriority.MEDIUM);
 
-        assignDTO = new AssignRequest("Técnico 1", LocalDate.of(2025, 10, 15));
+        assignDTO = new AssignRequest("Técnico 1", LocalDate.now());
         completeDTO = new CompleteRequest("Serviço concluído com sucesso");
         cancelDTO = new CancelWO("Equipamento já substituído");
         noteDTO = new AddNoteWO("Teste de log via controller");
@@ -83,7 +79,7 @@ class WorkOrderControllerTest {
                 .andExpect(jsonPath("$.description").value("Trocar motor"))
                 .andExpect(jsonPath("$.equipment").value("Bomba 3"))
                 .andExpect(jsonPath("$.client").value("Cliente X"))
-                .andExpect(jsonPath("$.type").value(WOType.CORRETIVA.toString()))
+                .andExpect(jsonPath("$.type").value(WOType.CORRECTIVE.toString()))
                 .andExpect(jsonPath("$.status").value(WOStatus.OPEN.toString()))
                 .andReturn()
                 .getResponse()
@@ -138,7 +134,7 @@ class WorkOrderControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.assignedTechnician").value("Técnico 1"))
-                .andExpect(jsonPath("$.scheduledDate").value("2025-10-15"))
+                .andExpect(jsonPath("$.scheduledDate").value(LocalDate.now().toString()))
                 .andExpect(jsonPath("$.status").value("SCHEDULED"));
     }
 

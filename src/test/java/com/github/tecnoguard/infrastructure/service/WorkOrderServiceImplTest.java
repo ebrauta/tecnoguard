@@ -1,5 +1,6 @@
 package com.github.tecnoguard.infrastructure.service;
 
+import com.github.tecnoguard.core.exceptions.BusinessException;
 import com.github.tecnoguard.core.exceptions.NotFoundException;
 import com.github.tecnoguard.domain.enums.WOType;
 import com.github.tecnoguard.domain.models.WorkOrder;
@@ -34,12 +35,12 @@ class WorkOrderServiceImplTest {
         order.setDescription("Trocar motor");
         order.setEquipment("Bomba 3");
         order.setClient("Cliente X");
-        order.setType(WOType.CORRETIVA);
+        order.setType(WOType.CORRECTIVE);
         order2 = new WorkOrder();
         order2.setDescription("Trocar eixo");
         order2.setEquipment("Bomba 3");
         order2.setClient("Cliente X");
-        order2.setType(WOType.CORRETIVA);
+        order2.setType(WOType.CORRECTIVE);
     }
 
     @Test
@@ -51,7 +52,7 @@ class WorkOrderServiceImplTest {
         Assertions.assertEquals("Trocar motor", w.getDescription());
         Assertions.assertEquals("Bomba 3", w.getEquipment());
         Assertions.assertEquals("Cliente X", w.getClient());
-        Assertions.assertEquals("CORRETIVA", w.getType().toString());
+        Assertions.assertEquals("CORRECTIVE", w.getType().toString());
         Assertions.assertEquals("OPEN", w.getStatus().toString());
 
     }
@@ -60,18 +61,18 @@ class WorkOrderServiceImplTest {
     @DisplayName("WorkOrderService - Deve agendar uma OS")
     void shouldAssignWorkOrder() {
         WorkOrder created = service.create(order);
-        WorkOrder assigned = service.assign(created.getId(), "Técnico", LocalDate.of(2025, 10, 7));
+        WorkOrder assigned = service.assign(created.getId(), "Técnico", LocalDate.now());
 
         Assertions.assertEquals("Técnico", assigned.getAssignedTechnician());
-        Assertions.assertEquals(LocalDate.of(2025, 10, 7), assigned.getScheduledDate());
+        Assertions.assertEquals(LocalDate.now(), assigned.getScheduledDate());
         Assertions.assertEquals("SCHEDULED", assigned.getStatus().toString());
     }
 
-    @Test
+     @Test
     @DisplayName("WorkOrderService - Deve iniciar uma OS")
     void shouldStartWorkOrder() {
         WorkOrder created = service.create(order);
-        WorkOrder assigned = service.assign(created.getId(), "Técnico", LocalDate.of(2025, 10, 7));
+        WorkOrder assigned = service.assign(created.getId(), "Técnico", LocalDate.now());
         WorkOrder started = service.start(assigned.getId());
 
         Assertions.assertEquals("IN_PROGRESS", started.getStatus().toString());
@@ -81,7 +82,7 @@ class WorkOrderServiceImplTest {
     @DisplayName("WorkOrderService - Deve completar uma OS")
     void shouldCompleteWorkOrder() {
         WorkOrder created = service.create(order);
-        WorkOrder assigned = service.assign(created.getId(), "Técnico", LocalDate.of(2025, 10, 7));
+        WorkOrder assigned = service.assign(created.getId(), "Técnico", LocalDate.now());
         WorkOrder started = service.start(assigned.getId());
         WorkOrder completed = service.complete(started.getId(), "Solucionada");
 
@@ -92,7 +93,7 @@ class WorkOrderServiceImplTest {
     @DisplayName("WorkOrderService - Deve cancelar uma OS")
     void shouldCancelWorkOrder() {
         WorkOrder created = service.create(order);
-        WorkOrder assigned = service.assign(created.getId(), "Técnico", LocalDate.of(2025, 10, 7));
+        WorkOrder assigned = service.assign(created.getId(), "Técnico", LocalDate.now());
         WorkOrder started = service.start(assigned.getId());
         WorkOrder canceled = service.cancel(started.getId(), "Cancelada");
 
@@ -126,20 +127,14 @@ class WorkOrderServiceImplTest {
     }
 
     @Test
-    @DisplayName("WorkOrderService - Deve lançar exceção ao buscar ID inexistente")
-    void shouldThrowWhenWorkOrderNotFound() {
-        Assertions.assertThrows(NotFoundException.class, () -> service.findById(999L));
-    }
-
-    @Test
     @DisplayName("WorkOrderService - Deve respeitar limite de página")
     void shouldReturnLimitedPage() {
         IntStream.rangeClosed(1, 5).forEach(i -> {
             var orderTest = new WorkOrder();
             orderTest.setDescription("OS " + i);
-            orderTest.setEquipment("Equipamento "+ i);
+            orderTest.setEquipment("Equipamento " + i);
             orderTest.setClient("Cliente " + i);
-            orderTest.setType(WOType.CORRETIVA);
+            orderTest.setType(WOType.CORRECTIVE);
             service.create(orderTest);
         });
 
@@ -151,4 +146,20 @@ class WorkOrderServiceImplTest {
         Assertions.assertEquals(2, page.getContent().size());
         Assertions.assertTrue(page.getTotalPages() >= 3);
     }
+
+    @Test
+    @DisplayName("WorkOrderService - Deve lançar exceção ao buscar ID inexistente")
+    void shouldThrowWhenWorkOrderNotFound() {
+        Assertions.assertThrows(NotFoundException.class, () -> service.findById(999L));
+    }
+
+    @Test
+    @DisplayName("WorkOrderService - Não deve agendar uma Os com data anterior a hoje")
+    void shouldNotAssignWorkOrderWithDateBeforeToday() {
+        WorkOrder created = service.create(order);
+
+        Assertions.assertThrows(BusinessException.class, () -> service.assign(created.getId(), "Técnico", LocalDate.of(2025, 11, 10)));;
+    }
+
+
 }

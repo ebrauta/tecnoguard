@@ -39,7 +39,7 @@ class WorkOrderNoteServiceImplTest {
         created.setDescription("Trocar motor");
         created.setEquipment("Bomba 3");
         created.setClient("Cliente X");
-        created.setType(WOType.CORRETIVA);
+        created.setType(WOType.CORRECTIVE);
         workOrder = woService.create(created);
     }
 
