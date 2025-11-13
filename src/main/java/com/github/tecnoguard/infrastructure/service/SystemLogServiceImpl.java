@@ -1,7 +1,7 @@
 package com.github.tecnoguard.infrastructure.service;
 
-import com.github.tecnoguard.domain.shared.models.SystemLog;
-import com.github.tecnoguard.domain.shared.service.ISystemLogService;
+import com.github.tecnoguard.core.models.SystemLog;
+import com.github.tecnoguard.core.service.ISystemLogService;
 import com.github.tecnoguard.infrastructure.persistence.SystemLogRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

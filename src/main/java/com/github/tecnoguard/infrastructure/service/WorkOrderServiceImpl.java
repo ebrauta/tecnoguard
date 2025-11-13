@@ -5,7 +5,7 @@ import com.github.tecnoguard.core.utils.NoteFormatter;
 import com.github.tecnoguard.domain.models.WorkOrder;
 import com.github.tecnoguard.domain.service.IWorkOrderNoteService;
 import com.github.tecnoguard.domain.service.IWorkService;
-import com.github.tecnoguard.domain.shared.service.ISystemLogService;
+import com.github.tecnoguard.core.service.ISystemLogService;
 import com.github.tecnoguard.infrastructure.persistence.WorkOrderRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

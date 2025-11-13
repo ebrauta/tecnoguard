@@ -1,7 +1,7 @@
 package com.github.tecnoguard.infrastructure.web.controller;
 
-import com.github.tecnoguard.core.shared.PageDTO;
-import com.github.tecnoguard.domain.shared.models.SystemLog;
+import com.github.tecnoguard.core.dto.PageDTO;
+import com.github.tecnoguard.core.models.SystemLog;
 import com.github.tecnoguard.infrastructure.persistence.SystemLogRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
