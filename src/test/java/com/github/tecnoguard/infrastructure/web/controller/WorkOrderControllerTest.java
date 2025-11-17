@@ -1,10 +1,7 @@
 package com.github.tecnoguard.infrastructure.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tecnoguard.application.dtos.workorder.request.AddNoteWO;
-import com.github.tecnoguard.application.dtos.workorder.request.AssignRequest;
-import com.github.tecnoguard.application.dtos.workorder.request.CancelWO;
-import com.github.tecnoguard.application.dtos.workorder.request.CompleteRequest;
+import com.github.tecnoguard.application.dtos.workorder.request.*;
 import com.github.tecnoguard.core.utils.NoteFormatter;
 import com.github.tecnoguard.domain.enums.WOPriority;
 import com.github.tecnoguard.domain.enums.WOStatus;
@@ -48,7 +45,7 @@ class WorkOrderControllerTest {
     @Autowired
     private NoteFormatter formatter;
 
-    private WorkOrder order;
+    private CreateRequest order;
     private AssignRequest assignDTO;
     private CompleteRequest completeDTO;
     private CancelWO cancelDTO;
@@ -56,12 +53,13 @@ class WorkOrderControllerTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        order = new WorkOrder();
-        order.setDescription("Trocar motor");
-        order.setEquipment("Bomba 3");
-        order.setClient("Cliente X");
-        order.setType(WOType.CORRECTIVE);
-        order.setPriority(WOPriority.MEDIUM);
+        order = new CreateRequest(
+                "Trocar motor",
+                "Bomba 3",
+                "Cliente X",
+                WOType.CORRECTIVE,
+                WOPriority.MEDIUM)
+        ;
 
         assignDTO = new AssignRequest("Técnico 1", LocalDate.now());
         completeDTO = new CompleteRequest("Serviço concluído com sucesso");

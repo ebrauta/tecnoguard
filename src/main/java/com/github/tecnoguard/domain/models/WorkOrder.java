@@ -1,11 +1,10 @@
 package com.github.tecnoguard.domain.models;
 
 import com.github.tecnoguard.core.exceptions.BusinessException;
-import com.github.tecnoguard.domain.enums.UserRole;
 import com.github.tecnoguard.domain.enums.WOPriority;
 import com.github.tecnoguard.domain.enums.WOStatus;
 import com.github.tecnoguard.domain.enums.WOType;
-import com.github.tecnoguard.domain.shared.models.AuditableEntity;
+import com.github.tecnoguard.core.models.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

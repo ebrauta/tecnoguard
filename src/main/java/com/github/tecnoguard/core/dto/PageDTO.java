@@ -1,4 +1,4 @@
-package com.github.tecnoguard.core.shared;
+package com.github.tecnoguard.core.dto;
 
 import lombok.Getter;
 import lombok.Setter;

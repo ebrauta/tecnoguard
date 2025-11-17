@@ -3,7 +3,7 @@ package com.github.tecnoguard.domain.models;
 import com.github.tecnoguard.core.exceptions.PasswordMismatchException;
 import com.github.tecnoguard.core.exceptions.UserInactiveException;
 import com.github.tecnoguard.domain.enums.UserRole;
-import com.github.tecnoguard.domain.shared.models.BaseEntity;
+import com.github.tecnoguard.core.models.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Getter;

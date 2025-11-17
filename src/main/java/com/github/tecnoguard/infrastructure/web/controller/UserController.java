@@ -5,7 +5,7 @@ import com.github.tecnoguard.application.dtos.user.request.CreateUserDTO;
 import com.github.tecnoguard.application.dtos.user.request.UpdateUserDTO;
 import com.github.tecnoguard.application.dtos.user.response.UserResponseDTO;
 import com.github.tecnoguard.application.mappers.users.UserMapper;
-import com.github.tecnoguard.core.shared.PageDTO;
+import com.github.tecnoguard.core.dto.PageDTO;
 import com.github.tecnoguard.domain.models.User;
 import com.github.tecnoguard.infrastructure.service.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
