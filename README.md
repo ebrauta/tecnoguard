@@ -15,7 +15,7 @@ JWT.
     ├─ main/java/com/github/tecnoguard
     │   ├─ TecnoguardApplication.java
     │   ├─ application/
-    │   │   ├─ dto/
+    │   │   ├─ dtos/
     │   │   │   ├─ auth/
     │   │   │   │   ├─ request/
     │   │   │   │   └─ response/
@@ -29,15 +29,15 @@ JWT.
     │   │         ├─ users/
     │   │         └─ workorder/
     │   ├─ core/
+    │   │   ├─ dto/
     │   │   ├─ exceptions/
-    │   │   └─ shared/
+    │   │   ├─ models/
+    │   │   ├─ service/
+    │   │   └─ utils/
     │   ├─ domain/
     │   │   ├─ enums/
     │   │   ├─ models/
-    │   │   ├─ service/
-    │   │   └─ shared/
-    │   │       ├─ models/
-    │   │       └─ service/
+    │   │   └─ service/
     │   └─ infrastructure/
     │       ├─ config/
     │       ├─ persistence/
@@ -89,39 +89,216 @@ JWT.
 
 ### 🧍‍♂️ User
 
-Campos:
+**Propósito:** Representa qualquer pessoa que acessa o sistema — operadores, técnicos, planejadores, supervisores e administradores.
 
-> id, username, password, name, email, role, active,
-> createdAt, updatedAt, lastLogin
+Controla autenticação, autorização e rastreabilidade de ações no sistema.
 
-- Implementa UserDetails
-- role define permissões
-- active controla login
-- password criptografado (BCrypt)
-
----
+- Campos:
+    - String username
+    - String password
+    - String name
+    - String email
+    - UserRole role
+    - LocalDateTime lastLogin
+- Métodos:
+    - Collection<? extends GrantedAuthority> getAuthorities (herdado do Spring Security UserDetails)
+    - Boolean isAccountNonExpired (herdado do Spring Security UserDetails)
+    - Boolean isAccountNonLocked (herdado do Spring Security UserDetails)
+    - Boolean isCredentialsNonExpired (herdado do Spring Security UserDetails)
+    - Boolean isEnabled (herdado do Spring Security UserDetails)
+    - Boolean isActive (herdado do Spring Security UserDetails)
+    - void changePassword(PasswordEncorder encoder, String curPass, String newPass)
+    - void validatePassword(PasswordEncoder encoder, String currentPassword)
+    - void deactivate
+    - void reactivate
+- Regras:
+    - **Criação de usuário**
+        - Apenas **ADMIN** pode criar novos usuários.
+        - Campos obrigatórios: username, password, email, role.
+        - username e email devem ser **únicos**.
+        - Senha deve ser armazenada **criptografada (BCrypt)**.
+        - Usuário novo inicia com active = true.
+        - Campos createdAt e createdBy são preenchidos automaticamente (auditoria).
+    - **Edição de usuário**
+        - Apenas **ADMIN** pode editar dados de outro usuário.
+        - O próprio usuário pode alterar **somente sua senha** e dados pessoais não críticos (ex: nome).
+        - Alteração de role deve gerar **registro de auditoria** (SystemLog).
+    - **Desativação**
+        - Usuários não são excluídos fisicamente; use active = false.
+        - A desativação bloqueia login e ações no sistema.
+        - Todas as referências (OS criadas, notas etc.) permanecem.
+    - **Autenticação**
+        - Login por username e password.
+        - Bloqueia usuários inactive.
+        - Após login, grava lastLogin e emite token JWT com claims (username, role).
+    - **Autorização**
+        - O role (UserRole) define o escopo de acesso:
+            - **ADMIN** → total;
+            - **SUPERVISOR** → validação e acompanhamento;
+            - **PLANNER** → criação e planejamento de OS;
+            - **TECHNICIAN** → execução de OS;
+            - **OPERATOR** → abertura de OS corretiva.
+- Restrições:
+    - username e email não podem se repetir.
+    - password nunca é retornado nas respostas da API.
+    - Nenhum usuário pode alterar o próprio role.
+    - Auditoria (createdBy, updatedBy) deve estar sempre preenchida.
 
 ### ⚙️ WorkOrder
 
-Campos:
-> id, description, equipment, client, type,
-> status, assignedTechnician, scheduleDate,
-> completedAt, cancelReason, workOrderLog, createdAt, updatedAt
+**Propósito:** Representa o **registro formal de uma manutenção** — desde a solicitação até o fechamento.
 
-Fluxo de estados:
-> OPEN → SCHEDULED → IN_PROGRESS → COMPLETED
-> ↘ CANCELLED
+É o **agregado raiz do domínio** de manutenção.
 
-Cada transição é validada pelo service conforme regras do PO.
+Estados ( WOStatus ):  OPEN ⇒ SCHEDULED ⇒ IN_PROGRESS ⇒ COMPLETED ⇒ CANCELLED
 
----
+Tipos ( WOType ) : CORRETIVE, PREVENTIVE, PREDITIVE
 
-### 📜 SystemLog
+Prioridade ( WOPriority ): HIGH ⇒ MEDIUM ⇒ LOW
 
-Campos:
-> id, timestamp, actorUsername, action, targetType, targetId, details
+- Campos:
+    - String description
+    - String equipment
+    - String client
+    - List<WorkOrderNote> notes (ManyToOne)
+    - WOStatus status
+    - WOType type
+    - String assignedTechnician
+    - LocalDate scheduleDate
+    - LocalDateTime openingDate
+    - LocalDateTime closingDate
+    - LocalDateTime cancelDate
+    - String cancelReason
+    - WOPriority priority
+- Métodos:
+    - void create
+    - void assign(String technician, LocalDate date)
+    - void start
+    - void complete(String log)
+    - void cancel(String reason)
+- Regras:
+    - **Criação**
+        - Pode ser criada por **OPERATOR**, **PLANNER**, **SUPERVISOR** ou **ADMIN**.
+        - Campos obrigatórios: description, equipment, type, priority.
+        - Ao criar, o status inicial é sempre OPEN.
+        - openingDate é preenchida automaticamente.
+        - O createdBy (usuário logado) é gravado na auditoria.
+        - Operator só cria tipo CORRETIVE
+    - **Agendamento**
+        - Somente **PLANNER** ou **ADMIN** podem agendar uma OS.
+        - Transição de status: OPEN → SCHEDULED.
+        - É necessário informar assignedTechnician e data de agendamento.
+        - Data de agendamento não pode ser menor que a data atual.
+    - **Execução**
+        - Apenas o **TECHNICIAN designado** pode iniciar a OS.
+        - Transição: SCHEDULED → IN_PROGRESS.
+        - O sistema grava startDate.
+    - **Conclusão**
+        - Apenas o **TECHNICIAN designado** ou o **SUPERVISOR** podem concluir.
+        - Transição: IN_PROGRESS → COMPLETED.
+        - Deve ter pelo menos uma WorkOrderNote de encerramento.
+        - Registra closingDate.
+    - **Cancelamento**
+        - Pode ser feito por **SUPERVISOR** ou **ADMIN**.
+        - Transições válidas:
+            - OPEN → CANCELLED
+            - SCHEDULED → CANCELLED
+            - IN_PROGRESS → CANCELLED
+        - Deve registrar cancelDate e cancelReason.
+    - **Rastreabilidade**
+        - Cada mudança de status deve gerar uma entrada em WorkOrderNotes.
+        - O relacionamento com WorkOrderNote forma o histórico completo da OS.
+- Restrições:
+    - Nenhum campo essencial (description, status, priority, type) pode ser nulo.
+    - Transições de status só são válidas conforme as regras de permissão.
+    - Uma OS CANCELLED ou COMPLETED não pode ser modificada.
 
-Registra ações críticas (criação/edição de usuários, alterações de OS, login/logout).
+### WorkOrderNote
+
+**Propósito:** Registrar observações, atualizações e comunicações relacionadas à execução de uma OS.
+
+Funciona como um “log de atividade” técnico e administrativo.
+
+Relacionamento: 1 OS → Várias Notes (1:N - id ⇒ workorder_id)
+
+- Campos:
+    - Workorder workOrder (ManyToOne - JoinColumn: workorder_id)
+    - String message
+    - String author
+- Métodos:
+  nenhum método interno
+
+- Regras:
+    - **Criação**
+        - Pode ser criada por qualquer usuário **envolvido na OS** (criou, planejou, executou ou supervisionou).
+        - Campos obrigatórios: message.
+        - O workOrder deve existir e estar **ativa** (!cancelled).
+        - createdBy e createdAt são preenchidos automaticamente.
+    - **Visibilidade**
+        - Você só vê os Logs da Os específica no id
+    - **Vinculação**
+        - Uma nota **sempre** pertence a uma OS (ManyToOne).
+        - Ao deletar uma OS, as notas associadas devem ser removidas em cascata (ou marcadas inativas).
+- Restrições:
+    - message não pode ser vazio.
+    - workOrder não pode ser nulo.
+
+### BaseEntity*
+
+**Propósito:** Base de auditoria de tabelas, serve para auditoria de User, WorkOrder e WorkorderNote.
+
+- Campos:
+    - Long id (anotation: Id e GeneraredValue - jakarta.persistence)
+    - LocalDateTime createdAt (anotation: CreatedAt - springframework.data.anotation)
+    - LocalDateTime updatedAt (anotation: UpdatedAt - springframework.data.anotation)
+    - Boolean active
+- Métodos:
+  Não há métodos
+
+- Regras:
+  Sem regras
+
+- Restrições:
+  Sem restrições
+
+
+### AuditableEntity*
+
+**Propósito:** Complementa a auditoria do BaseEntity. É uma extensão da mesma. Como os dados dependem do User, essa auditoria é utilizada somente nas entidades diferentes de User. ****
+
+- Campos:
+    - User createdBy (anotation: CreatedBy - springframework.data.anotation)
+    - User updatedBy (anotation: UpdatedBy - springframework.data.anotation)
+- Métodos:
+  Não há métodos
+
+- Regras:
+  Sem regras
+
+- Restrições:
+  Sem restrições
+
+
+### 📜 SystemLog*
+
+**Propósito:** Log de registro de auditoria, detalha o que tá sendo feito com todo o sistema.
+
+- Campos:
+    - Long id (anotation: Id e GeneraredValue - jakarta.persistence)
+    - LocalDateTime timestamp
+    - String actorUsername
+    - String action
+    - String targetType
+    - Long targetId
+    - String details
+- Métodos:
+  Não há métodos
+
+- Regras:
+  Sem regras
+
+- Restrições:
+  Sem restrições
 
 ---
 
@@ -159,15 +336,26 @@ Exemplo de header:
 | PATCH  | /api/users/reactivate/{id} | Reativa usuário              | ADMIN             |
 
 ### WorkOrders
-| Método | Endpoint                       | Descrição                  | Role                           |
-|--------|--------------------------------|----------------------------|--------------------------------|
-| GET    | /api/workorders                | Retorna lista de todas OS  | Todos                          |
-| GET    | /api/workorders/{id}           | Retorna info da OS         | Todos                          |
-| POST   | /api/workorders                | Cria nova OS               | OPERATOR, PLANNER              |
-| PATCH  | /api/workorders/assign/{id}    | Agenda técnico para OS     | PLANNER, ADMIN                 |
-| PATCH  | /api/workorders/start/{id}     | Inicia OS                  | TECHNICIAN, ADMIN              |                
-| PATCH  | /api/workorders/complete/{id}  | Finaliza a OS              | TECHNICIAN, SUPERVISOR, ADMIN  | 
-| PATCH  | /api/workorders/cancel/{id}    | Cancela a OS               | PLANNER, SUPERVISOR, ADMIN     |      
+| Método | Endpoint                      | Descrição                  | Role                           |
+|--------|-------------------------------|----------------------------|--------------------------------|
+| GET    | /api/workorders               | Retorna lista de todas OS  | Todos                          |
+| GET    | /api/workorders/{id}          | Retorna info da OS         | Todos                          |
+| GET    | /api/workorders/log/{id}      | Retorna as anotações da OS | Todos                          |
+| POST   | /api/workorders               | Cria nova OS               | OPERATOR, PLANNER              |
+| POST   | /api/workorders/log           | Cria nova anotação na OS   | OPERATOR, PLANNER              |
+| PATCH  | /api/workorders/assign/{id}   | Agenda técnico para OS     | PLANNER, ADMIN                 |
+| PATCH  | /api/workorders/start/{id}    | Inicia OS                  | TECHNICIAN, ADMIN              |                
+| PATCH  | /api/workorders/complete/{id} | Finaliza a OS              | TECHNICIAN, SUPERVISOR, ADMIN  | 
+| PATCH  | /api/workorders/cancel/{id}   | Cancela a OS               | PLANNER, SUPERVISOR, ADMIN     |      
+
+### SystemLog
+
+| Método | Endpoint  | Descrição                | Role  |
+|--------|-----------|--------------------------|-------|
+| GET    | /api/logs | Retorna o log do sistema | ADMIN |
+
+
+
 ---
 
 ## 🧪 Testes
@@ -191,12 +379,11 @@ Exemplo de header:
 ---
 
 ## 🪜 Próximos Passos
-1. Refinar auditoria (SystemLog completo).
-2. Migrar workOrderLog → entidade WorkOrderNote.
-3. Criar entidades Equipment e Client.
-4. Melhorar documentação Swagger (exemplos e security scheme).
-5. Docker Compose + PostgreSQL + Flyway (migrations).
-6. Testes unitários adicionais para serviços.
+1. Refinar auditoria.
+2. Criar entidades Technician, Equipment e Client.
+3. Melhorar documentação Swagger (exemplos e security scheme).
+4. Docker Compose + PostgreSQL + Flyway (migrations).
+5. Testes unitários adicionais para serviços.
 
 ## 🧭 Execução local (modo dev)
 ### Requisitos
