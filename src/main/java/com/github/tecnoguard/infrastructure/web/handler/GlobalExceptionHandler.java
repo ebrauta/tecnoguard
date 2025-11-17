@@ -1,7 +1,7 @@
 package com.github.tecnoguard.infrastructure.web.handler;
 
 import com.github.tecnoguard.core.exceptions.*;
-import com.github.tecnoguard.core.shared.ErrorResponse;
+import com.github.tecnoguard.core.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

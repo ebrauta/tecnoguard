@@ -6,7 +6,7 @@ import com.github.tecnoguard.core.exceptions.DuplicatedException;
 import com.github.tecnoguard.core.exceptions.NotFoundException;
 import com.github.tecnoguard.domain.models.User;
 import com.github.tecnoguard.domain.service.IUserService;
-import com.github.tecnoguard.domain.shared.service.ISystemLogService;
+import com.github.tecnoguard.core.service.ISystemLogService;
 import com.github.tecnoguard.infrastructure.persistence.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
