@@ -23,12 +23,16 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class User extends BaseEntity implements UserDetails {
+    @Column(name = "username")
     private String username;
+    @Column(name = "password")
     private String password;
+    @Column(name = "name")
     private String name;
+    @Column(name = "email")
     private String email;
-    @Column(name = "user_role")
     @Enumerated(EnumType.STRING)
+    @Column(name = "user_role")
     private UserRole role;
     @Column(name = "last_login")
     private LocalDateTime lastLogin;

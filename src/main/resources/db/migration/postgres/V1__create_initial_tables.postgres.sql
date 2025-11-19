@@ -46,7 +46,7 @@ CREATE TABLE tb_workorder_notes (
 );
 
 CREATE TABLE tb_system_log (
-    id BIGSERIAL PRIMARY KEY,
+    id_systemlog BIGSERIAL PRIMARY KEY,
     log_timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     actor_username TEXT NOT NULL,
     action TEXT NOT NULL,

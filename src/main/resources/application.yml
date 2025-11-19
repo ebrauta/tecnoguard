@@ -24,3 +24,6 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration/postgres
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false

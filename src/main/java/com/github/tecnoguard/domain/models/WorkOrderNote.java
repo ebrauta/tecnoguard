@@ -20,8 +20,9 @@ public class WorkOrderNote extends AuditableEntity {
     @JoinColumn(name = "workorder_id", nullable = false)
     @JsonIgnore
     private WorkOrder workOrder;
-
+    @Column(name = "message")
     private String message;
+    @Column(name = "author")
     private String author;
 
 }

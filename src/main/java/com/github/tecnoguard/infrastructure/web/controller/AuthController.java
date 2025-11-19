@@ -9,12 +9,19 @@ import com.github.tecnoguard.domain.models.User;
 import com.github.tecnoguard.infrastructure.persistence.UserRepository;
 import com.github.tecnoguard.infrastructure.security.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.LoginException;
@@ -36,7 +43,42 @@ public class AuthController {
         this.tokenService = tokenService;
     }
 
-    @Operation(summary = "Login", description = "Autentica usuário.")
+    @Operation(
+            summary = "Login",
+            description = "Autentica usuário.",
+            security = @SecurityRequirement(name = "")
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Autenticação realizada com sucesso",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = LoginResponseDTO.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Usuário ou Senha inválidos",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "Erro de Autenticação",
+                                            summary = "Usuário não Autenticado",
+                                            value = """
+                                                    {
+                                                      "timestamp": "2025-11-19T15:00:00.00000000",
+                                                      "error": "Login",
+                                                      "message": "Usuário ou Senha inválidos",
+                                                      "path": "/api/auth/login"
+                                                    }
+                                                    """
+                                    )
+                            )
+                    )
+            }
+    )
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO dto) throws LoginException {
         try {
@@ -56,7 +98,42 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "About me", description = "Detalha informações do usuário autenticado.")
+    @Operation(
+            summary = "Sobre mim",
+            description = "Detalha informações do usuário autenticado.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = UserInfoDTO.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Usuário Não Autenticado",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "Autenticação",
+                                            summary = "Usuário Não Autenticado",
+                                            value = """
+                                                    {
+                                                      "timestamp": "2025-11-19T15:00:00.00000000",
+                                                      "error": "Autenticação",
+                                                      "message": "Usuário não autenticado",
+                                                      "path": "/api/auth/whoami"
+                                                    }
+                                                    """
+                                    )
+                            )
+                    )
+            }
+    )
     @GetMapping("/whoami")
     public ResponseEntity<UserInfoDTO> about() throws AccessDeniedBusiness {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
