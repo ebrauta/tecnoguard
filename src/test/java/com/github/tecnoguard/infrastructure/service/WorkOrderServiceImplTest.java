@@ -2,6 +2,7 @@ package com.github.tecnoguard.infrastructure.service;
 
 import com.github.tecnoguard.core.exceptions.BusinessException;
 import com.github.tecnoguard.core.exceptions.NotFoundException;
+import com.github.tecnoguard.domain.enums.WOPriority;
 import com.github.tecnoguard.domain.enums.WOType;
 import com.github.tecnoguard.domain.models.WorkOrder;
 import org.junit.jupiter.api.*;
@@ -36,11 +37,13 @@ class WorkOrderServiceImplTest {
         order.setEquipment("Bomba 3");
         order.setClient("Cliente X");
         order.setType(WOType.CORRECTIVE);
+        order.setPriority(WOPriority.MEDIUM);
         order2 = new WorkOrder();
         order2.setDescription("Trocar eixo");
         order2.setEquipment("Bomba 3");
         order2.setClient("Cliente X");
         order2.setType(WOType.CORRECTIVE);
+        order2.setPriority(WOPriority.MEDIUM);
     }
 
     @Test
@@ -135,6 +138,7 @@ class WorkOrderServiceImplTest {
             orderTest.setEquipment("Equipamento " + i);
             orderTest.setClient("Cliente " + i);
             orderTest.setType(WOType.CORRECTIVE);
+            orderTest.setPriority(WOPriority.MEDIUM);
             service.create(orderTest);
         });
 

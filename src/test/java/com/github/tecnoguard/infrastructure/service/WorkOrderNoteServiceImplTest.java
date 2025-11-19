@@ -1,5 +1,6 @@
 package com.github.tecnoguard.infrastructure.service;
 
+import com.github.tecnoguard.domain.enums.WOPriority;
 import com.github.tecnoguard.domain.enums.WOType;
 import com.github.tecnoguard.domain.models.WorkOrder;
 import com.github.tecnoguard.domain.models.WorkOrderNote;
@@ -40,6 +41,7 @@ class WorkOrderNoteServiceImplTest {
         created.setEquipment("Bomba 3");
         created.setClient("Cliente X");
         created.setType(WOType.CORRECTIVE);
+        created.setPriority(WOPriority.MEDIUM);
         workOrder = woService.create(created);
     }
 
