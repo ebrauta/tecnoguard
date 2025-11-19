@@ -9,6 +9,7 @@ import com.github.tecnoguard.core.dto.PageDTO;
 import com.github.tecnoguard.domain.models.User;
 import com.github.tecnoguard.infrastructure.service.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "User - Usuários", description = "Gestão de Usuários")
 public class UserController {
 
     private final UserServiceImpl service;

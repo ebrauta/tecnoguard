@@ -9,6 +9,8 @@ import com.github.tecnoguard.domain.models.User;
 import com.github.tecnoguard.infrastructure.persistence.UserRepository;
 import com.github.tecnoguard.infrastructure.security.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

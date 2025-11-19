@@ -4,6 +4,7 @@ import com.github.tecnoguard.core.dto.PageDTO;
 import com.github.tecnoguard.core.models.SystemLog;
 import com.github.tecnoguard.infrastructure.persistence.SystemLogRepository;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/logs")
 @PreAuthorize("hasRole('ADMIN')")
+@Tag(name = "SystemLog - Auditoria do Sistema", description = "Gestão de Auditoria do Sistema")
 public class SystemLogController {
 
     private final SystemLogRepository repo;
