@@ -48,7 +48,7 @@ class WorkOrderControllerTest {
     private CreateRequest order;
     private AssignRequest assignDTO;
     private CompleteRequest completeDTO;
-    private CancelWO cancelDTO;
+    private CancelRequest cancelDTO;
     private AddNoteWO noteDTO;
 
     @BeforeEach
@@ -63,7 +63,7 @@ class WorkOrderControllerTest {
 
         assignDTO = new AssignRequest("Técnico 1", LocalDate.now());
         completeDTO = new CompleteRequest("Serviço concluído com sucesso");
-        cancelDTO = new CancelWO("Equipamento já substituído");
+        cancelDTO = new CancelRequest("Equipamento já substituído");
         noteDTO = new AddNoteWO("Teste de log via controller");
     }
 
@@ -209,7 +209,7 @@ class WorkOrderControllerTest {
     @DisplayName("WorkOrderController - Deve retornar 401 se não autenticado")
     void shouldRejectUnauthorizedAccess() throws Exception {
         mockMvc.perform(get("/api/workorders"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

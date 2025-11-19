@@ -124,6 +124,6 @@ class AuthControllerTest {
     @DisplayName("AuthController - Deve negar acesso a /whoami se não autenticado")
     void shouldRejectUnauthorizedAccessToMe() throws Exception {
         mockMvc.perform(get("/api/auth/whoami"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 }
