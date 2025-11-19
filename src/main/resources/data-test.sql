@@ -1,1 +1,0 @@
-insert into tb_users(name, username, password, role, active, created_at, updated_at, last_login, email) values ('Administrador','admin', '$2a$12$JKoUNpIkDYYwexBrn8XhXu9BAZXdLk5nOSKd37r.7hITFt4xL5wYK', 0, true, '2025-10-07 00:00:00','2025-10-07 00:00:00','2025-10-07 00:00:00','admin@mail.com');

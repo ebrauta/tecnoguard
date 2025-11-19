@@ -19,10 +19,14 @@ public class SystemLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "log_timestamp")
     private LocalDateTime timestamp;
+    @Column(name = "actor_username")
     private String actorUsername;
     private String action;
+    @Column(name = "target_type")
     private String targetType;
+    @Column(name = "target_id")
     private Long targetId;
     private String details;
 

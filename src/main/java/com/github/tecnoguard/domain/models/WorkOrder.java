@@ -32,18 +32,26 @@ public class WorkOrder extends AuditableEntity {
     @OneToMany(mappedBy = "workOrder", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<WorkOrderNote> notes = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
     private WOStatus status;
+    @Enumerated(EnumType.STRING)
     private WOType type;
+    @Enumerated(EnumType.STRING)
     private WOPriority priority;
-
+    @Column(name = "assigned_technician")
     private String assignedTechnician;
+    @Column(name = "scheduled_date")
     private LocalDate scheduledDate;
-
+    @Column(name = "opening_date")
     private LocalDateTime openingDate;
+    @Column(name = "start_date")
     private LocalDateTime startDate;
+    @Column(name = "closing_date")
     private LocalDateTime closingDate;
+    @Column(name = "cancel_date")
     private LocalDateTime cancelDate;
 
+    @Column(name = "cancel_reason")
     private String cancelReason;
 
 
