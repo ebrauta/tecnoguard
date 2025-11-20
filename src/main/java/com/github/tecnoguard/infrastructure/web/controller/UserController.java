@@ -1,13 +1,12 @@
 package com.github.tecnoguard.infrastructure.web.controller;
 
-import com.github.tecnoguard.application.dtos.auth.response.UserInfoDTO;
 import com.github.tecnoguard.application.dtos.user.request.ChangePasswordDTO;
 import com.github.tecnoguard.application.dtos.user.request.CreateUserDTO;
 import com.github.tecnoguard.application.dtos.user.request.UpdateUserDTO;
 import com.github.tecnoguard.application.dtos.user.response.UserResponseDTO;
 import com.github.tecnoguard.application.mappers.users.UserMapper;
+import com.github.tecnoguard.core.dto.ErrorResponseDTO;
 import com.github.tecnoguard.core.dto.PageDTO;
-import com.github.tecnoguard.core.dto.SystemLogDTO;
 import com.github.tecnoguard.domain.models.User;
 import com.github.tecnoguard.infrastructure.service.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +26,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "User - Usuários", description = "Gestão de Usuários")
@@ -65,19 +63,8 @@ public class UserController {
                             description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autenticação",
-                                            summary = "Usuário não autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/users"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     ),
                     @ApiResponse(
@@ -85,19 +72,8 @@ public class UserController {
                             description = "Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não autorizado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/users"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
                             )
                     )
             }
@@ -126,43 +102,21 @@ public class UserController {
                                     schema = @Schema(implementation = UserPageDTO.class))
                     ),
                     @ApiResponse(
-                    responseCode = "401",
-                    description = "Usuário Não Autenticado",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class),
-                            examples = @ExampleObject(
-                                    name = "Erro de Autenticação",
-                                    summary = "Usuário não autenticado",
-                                    value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/users"
-                                                    }
-                                                    """
+                            responseCode = "401",
+                            description = "Usuário Não Autenticado",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
-                    )
-            ),
+                    ),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não autorizado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/users"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
                             )
                     )
             }
@@ -197,39 +151,26 @@ public class UserController {
                             description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autenticação",
-                                            summary = "Usuário não autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/users"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Não Permitido",
+                            description = "Acesso Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não autorizado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/users"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Usuário Não Encontrado",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "404", ref = "404")
                             )
                     )
             }
@@ -261,39 +202,26 @@ public class UserController {
                             description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autenticação",
-                                            summary = "Usuário não autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/users"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Não Permitido",
+                            description = "Acesso Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não autorizado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/users"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Usuário Não Encontrado",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "404", ref = "404")
                             )
                     )
             }
@@ -323,39 +251,26 @@ public class UserController {
                             description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autenticação",
-                                            summary = "Usuário não autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/users/deactivate"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Não Permitido",
+                            description = "Acesso Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não autorizado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/users/deactivate"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Usuário Não Encontrado",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "404", ref = "404")
                             )
                     )
             }
@@ -383,39 +298,26 @@ public class UserController {
                             description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autenticação",
-                                            summary = "Usuário não autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/users/reactivate"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Não Permitido",
+                            description = "Acesso Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não autorizado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/users/reactivate"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Usuário Não Encontrado",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "404", ref = "404")
                             )
                     )
             }
@@ -443,39 +345,26 @@ public class UserController {
                             description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autenticação",
-                                            summary = "Usuário não autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/users/password"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Não Permitido",
+                            description = "Acesso Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não autorizado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/users/password"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Usuário Não Encontrado",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "404", ref = "404")
                             )
                     )
             }

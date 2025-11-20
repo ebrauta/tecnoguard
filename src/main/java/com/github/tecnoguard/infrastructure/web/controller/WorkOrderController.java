@@ -4,6 +4,7 @@ import com.github.tecnoguard.application.dtos.workorder.request.*;
 import com.github.tecnoguard.application.dtos.workorder.response.*;
 import com.github.tecnoguard.application.mappers.workorder.WorkOrderMapper;
 import com.github.tecnoguard.application.mappers.workorder.WorkOrderNoteMapper;
+import com.github.tecnoguard.core.dto.ErrorResponseDTO;
 import com.github.tecnoguard.core.dto.PageDTO;
 import com.github.tecnoguard.domain.models.WorkOrder;
 import com.github.tecnoguard.domain.models.WorkOrderNote;
@@ -37,6 +38,7 @@ public class WorkOrderController {
 
     public static class GenericPageDTO extends PageDTO<Object> {
     }
+
     public static class NotePageDTO extends PageDTO<WorkOrderNoteDTO> {
     }
 
@@ -79,44 +81,22 @@ public class WorkOrderController {
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Não autenticado",
+                            description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autenticação",
-                                            summary = "Usuário não autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/workorders"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Usuário não permitido",
+                            description = "Acesso Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não tem autorização",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/workorders"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
                             )
-                    )
+                    ),
             }
     )
     @GetMapping
@@ -145,42 +125,29 @@ public class WorkOrderController {
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Não autenticado",
+                            description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autenticação",
-                                            summary = "Usuário não autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/workorders/log"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Usuário não permitido",
+                            description = "Acesso Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não tem autorização",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/workorders/log"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Ordem de Serviço Não Encontrada",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "404", ref = "404")
                             )
                     )
             }
@@ -215,42 +182,29 @@ public class WorkOrderController {
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Não autenticado",
+                            description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autenticação",
-                                            summary = "Usuário não autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/workorders/log"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Usuário não permitido",
+                            description = "Acesso Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não tem autorização",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/workorders/log"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Ordem de Serviço Não Encontrada",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "404", ref = "404")
                             )
                     )
             }
@@ -285,42 +239,29 @@ public class WorkOrderController {
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Não autenticado",
+                            description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autenticação",
-                                            summary = "Usuário não autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/workorders"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Usuário não permitido",
+                            description = "Acesso Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não tem autorização",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/workorders"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Ordem de Serviço Não Encontrada",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "404", ref = "404")
                             )
                     )
             }
@@ -347,49 +288,27 @@ public class WorkOrderController {
             value = {
                     @ApiResponse(
                             responseCode = "201",
-                            description = "OS criada com sucesso",
+                            description = "Ordem de Serviço criada com Sucesso",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = CreateResponse.class))
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Não autenticado",
+                            description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autenticação",
-                                            summary = "Usuário não autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/workorders"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Usuário não permitido",
+                            description = "Acesso Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não tem autorização",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/workorders"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
                             )
                     )
             }
@@ -421,62 +340,48 @@ public class WorkOrderController {
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Erro de regra de negócio",
+                            description = "Quebra de Regra de Negócio",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class),
                                     examples = @ExampleObject(
-                                            name = "Erro de Regra de Negócio",
-                                            summary = "Usuário não tem permissão para essa atividade",
+                                            name = "Erro: Regra de Negócio",
+                                            summary = "Tipo de Usuário sem Permissão.",
                                             value = """
                                                     {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Erro de Regra de Negócio",
-                                                      "message": "Usuário não tem permissão para essa atividade",
-                                                      "path": "/api/workorders/assign"
-                                                    }
+                                                      "timestamp": "2025-11-19T15:00:00.000",
+                                                      "error": "Regra de Negócio",
+                                                      "message": "Usuário não tem permissão para agendar esta OS.",
+                                                      "path": "{URL_DA_REQUISIÇÃO}
                                                     """
                                     )
                             )
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Não autenticado",
+                            description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autenticação",
-                                            summary = "Usuário não autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/workorders/assign"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Usuário não permitido",
+                            description = "Acesso Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não tem autorização",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/workorders/assign"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Ordem de Serviço Não Encontrada",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "404", ref = "404")
                             )
                     )
             }
@@ -509,19 +414,19 @@ public class WorkOrderController {
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Erro de regra de negócio",
+                            description = "Quebra de Regra de Negócio",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class),
                                     examples = @ExampleObject(
-                                            name = "Erro de Regra de Negócio",
-                                            summary = "Usuário não tem permissão para essa atividade",
+                                            name = "Erro: Regra de Negócio",
+                                            summary = "Tipo de Usuário sem Permissão.",
                                             value = """
                                                     {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Erro de Regra de Negócio",
-                                                      "message": "Usuário não tem permissão para essa atividade",
-                                                      "path": "/api/workorders/start"
+                                                      "timestamp": "2025-11-19T15:00:00.000",
+                                                      "error": "Regra de Negócio",
+                                                      "message": "Usuário não tem permissão para iniciar esta OS.",
+                                                      "path": "{URL_DA_REQUISIÇÃO}"
                                                     }
                                                     """
                                     )
@@ -529,42 +434,29 @@ public class WorkOrderController {
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Não autenticado",
+                            description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autenticação",
-                                            summary = "Usuário não autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/workorders/start"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Usuário não permitido",
+                            description = "Acesso Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não tem autorização",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/workorders/start"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Ordem de Serviço Não Encontrada",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "404", ref = "404")
                             )
                     )
             }
@@ -595,19 +487,19 @@ public class WorkOrderController {
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Erro de regra de negócio",
+                            description = "Quebra de Regra de Negócio",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class),
                                     examples = @ExampleObject(
-                                            name = "Erro de Regra de Negócio",
-                                            summary = "Usuário não tem permissão para essa atividade",
+                                            name = "Erro: Regra de Negócio",
+                                            summary = "Tipo de Usuário sem Permissão.",
                                             value = """
                                                     {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Erro de Regra de Negócio",
-                                                      "message": "Usuário não tem permissão para essa atividade",
-                                                      "path": "/api/workorders/complete"
+                                                      "timestamp": "2025-11-19T15:00:00.000",
+                                                      "error": "Regra de Negócio",
+                                                      "message": "Usuário não tem permissão para finalizar esta OS.",
+                                                      "path": "{URL_DA_REQUISIÇÃO}"
                                                     }
                                                     """
                                     )
@@ -615,42 +507,29 @@ public class WorkOrderController {
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Não autenticado",
+                            description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autenticação",
-                                            summary = "Usuário não autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/workorders/complete"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Usuário não permitido",
+                            description = "Acesso Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não tem autorização",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/workorders/complete"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Ordem de Serviço Não Encontrada",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "404", ref = "404")
                             )
                     )
             }
@@ -682,19 +561,19 @@ public class WorkOrderController {
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Erro de regra de negócio",
+                            description = "Quebra de Regra de Negócio",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class),
                                     examples = @ExampleObject(
-                                            name = "Erro de Regra de Negócio",
-                                            summary = "Usuário não tem permissão para essa atividade",
+                                            name = "Erro: Regra de Negócio",
+                                            summary = "Tipo de Usuário sem Permissão.",
                                             value = """
                                                     {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Erro de Regra de Negócio",
-                                                      "message": "Usuário não tem permissão para essa atividade",
-                                                      "path": "/api/workorders/cancel"
+                                                      "timestamp": "2025-11-19T15:00:00.000",
+                                                      "error": "Regra de Negócio",
+                                                      "message": "Usuário não tem permissão para cancelar esta OS.",
+                                                      "path": "{URL_DA_REQUISIÇÃO}"
                                                     }
                                                     """
                                     )
@@ -702,42 +581,29 @@ public class WorkOrderController {
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Não autenticado",
+                            description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autenticação",
-                                            summary = "Usuário não autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/workorders/cancel"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Usuário não permitido",
+                            description = "Acesso Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não tem autorização",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/workorders/cancel"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Ordem de Serviço Não Encontrada",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "404", ref = "404")
                             )
                     )
             }

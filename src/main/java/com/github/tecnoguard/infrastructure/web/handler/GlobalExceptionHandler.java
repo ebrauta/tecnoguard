@@ -1,7 +1,7 @@
 package com.github.tecnoguard.infrastructure.web.handler;
 
 import com.github.tecnoguard.core.exceptions.*;
-import com.github.tecnoguard.core.dto.ErrorResponse;
+import com.github.tecnoguard.core.dto.ErrorResponseDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorResponse> handleBusiness(BusinessException ex, HttpServletRequest req) {
+    public ResponseEntity<ErrorResponseDTO> handleBusiness(BusinessException ex, HttpServletRequest req) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ErrorResponse(
+                new ErrorResponseDTO(
                         LocalDateTime.now(),
                         "Regra de negócio inválida",
                         ex.getMessage(),
@@ -27,9 +27,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException ex, HttpServletRequest req) {
+    public ResponseEntity<ErrorResponseDTO> handleNotFound(NotFoundException ex, HttpServletRequest req) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ErrorResponse(
+                new ErrorResponseDTO(
                         LocalDateTime.now(),
                         "Não encontrado!",
                         ex.getMessage(),
@@ -39,9 +39,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
+    public ResponseEntity<ErrorResponseDTO> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ErrorResponse(
+                new ErrorResponseDTO(
                         LocalDateTime.now(),
                         "Erro de validação",
                         ex.getMessage(),
@@ -50,9 +50,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(WrongLoginException.class)
-    public ResponseEntity<ErrorResponse> handleLogin(Exception ex, HttpServletRequest req) {
+    public ResponseEntity<ErrorResponseDTO> handleLogin(Exception ex, HttpServletRequest req) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                new ErrorResponse(
+                new ErrorResponseDTO(
                         LocalDateTime.now(),
                         "Erro de Login",
                         ex.getMessage(),
@@ -62,9 +62,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedBusiness.class)
-    public ResponseEntity<ErrorResponse> handleAboutMe(Exception ex, HttpServletRequest req) {
+    public ResponseEntity<ErrorResponseDTO> handleAboutMe(Exception ex, HttpServletRequest req) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                new ErrorResponse(
+                new ErrorResponseDTO(
                         LocalDateTime.now(),
                         "Usuário não autenticado",
                         ex.getMessage(),
@@ -74,9 +74,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DuplicatedException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicated(Exception ex, HttpServletRequest req) {
+    public ResponseEntity<ErrorResponseDTO> handleDuplicated(Exception ex, HttpServletRequest req) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ErrorResponse(
+                new ErrorResponseDTO(
                         LocalDateTime.now(),
                         "Registro duplicado",
                         ex.getMessage(),
@@ -86,9 +86,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneral(Exception ex, HttpServletRequest req) {
+    public ResponseEntity<ErrorResponseDTO> handleGeneral(Exception ex, HttpServletRequest req) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                new ErrorResponse(
+                new ErrorResponseDTO(
                         LocalDateTime.now(),
                         "Erro interno",
                         ex.getMessage(),

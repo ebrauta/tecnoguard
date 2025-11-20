@@ -3,6 +3,7 @@ package com.github.tecnoguard.infrastructure.web.controller;
 import com.github.tecnoguard.application.dtos.auth.request.LoginDTO;
 import com.github.tecnoguard.application.dtos.auth.response.LoginResponseDTO;
 import com.github.tecnoguard.application.dtos.auth.response.UserInfoDTO;
+import com.github.tecnoguard.core.dto.ErrorResponseDTO;
 import com.github.tecnoguard.core.exceptions.AccessDeniedBusiness;
 import com.github.tecnoguard.core.exceptions.WrongLoginException;
 import com.github.tecnoguard.domain.models.User;
@@ -21,7 +22,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.LoginException;
@@ -62,7 +62,7 @@ public class AuthController {
                             description = "Usuário ou Senha inválidos",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
                                     examples = @ExampleObject(
                                             name = "Erro de Autenticação",
                                             summary = "Usuário não Autenticado",
@@ -86,7 +86,7 @@ public class AuthController {
             Authentication auth = manager.authenticate(usernamePassword);
             SecurityContextHolder.getContext().setAuthentication(auth);
             Optional<User> user = repo.findByUsername(dto.username());
-            if(user.isPresent()){
+            if (user.isPresent()) {
                 user.get().setLastLogin(LocalDateTime.now());
                 repo.save(user.get());
             }
@@ -117,29 +117,18 @@ public class AuthController {
                             description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Autenticação",
-                                            summary = "Usuário Não Autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/auth/whoami"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     )
             }
     )
     @GetMapping("/whoami")
     public ResponseEntity<UserInfoDTO> about() throws AccessDeniedBusiness {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser")) {
-                throw new AccessDeniedBusiness("Erro de autenticação");
-            }
-            return ResponseEntity.ok(new UserInfoDTO(auth.getName(), auth.getAuthorities().toString()));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser")) {
+            throw new AccessDeniedBusiness("Erro de autenticação");
+        }
+        return ResponseEntity.ok(new UserInfoDTO(auth.getName(), auth.getAuthorities().toString()));
     }
 }

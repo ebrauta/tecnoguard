@@ -1,7 +1,7 @@
 package com.github.tecnoguard.infrastructure.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tecnoguard.core.dto.ErrorResponse;
+import com.github.tecnoguard.core.dto.ErrorResponseDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,7 +25,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 "Erro de autenticação",
                 "Usuário não autenticado",

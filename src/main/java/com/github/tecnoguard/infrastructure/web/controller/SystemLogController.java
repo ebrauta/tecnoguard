@@ -1,15 +1,11 @@
 package com.github.tecnoguard.infrastructure.web.controller;
 
-import com.github.tecnoguard.application.dtos.auth.response.UserInfoDTO;
-import com.github.tecnoguard.core.dto.ErrorResponse;
+import com.github.tecnoguard.core.dto.ErrorResponseDTO;
 import com.github.tecnoguard.core.dto.PageDTO;
 import com.github.tecnoguard.core.dto.SystemLogDTO;
-import com.github.tecnoguard.core.models.SystemLog;
-import com.github.tecnoguard.infrastructure.persistence.SystemLogRepository;
 import com.github.tecnoguard.infrastructure.service.SystemLogServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -63,39 +59,17 @@ public class SystemLogController {
                             description = "Usuário Não Autenticado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Autenticação",
-                                            summary = "Usuário não autenticado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Erro de autenticação",
-                                                      "message": "Usuário não autenticado",
-                                                      "path": "/api/logs"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "401", ref = "401")
                             )
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Não Permitido",
+                            description = "Acesso Não Permitido",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = org.springframework.web.ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            name = "Erro de Autorização",
-                                            summary = "Usuário não autorizado",
-                                            value = """
-                                                    {
-                                                      "timestamp": "2025-11-19T15:00:00.00000000",
-                                                      "error": "Autorização",
-                                                      "message": "Usuário não autorizado",
-                                                      "path": "/api/logs"
-                                                    }
-                                                    """
-                                    )
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(name = "403", ref = "403")
                             )
                     )
             }
