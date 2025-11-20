@@ -1,6 +1,7 @@
 package com.github.tecnoguard.infrastructure.config;
 
 import com.github.tecnoguard.domain.enums.UserRole;
+import com.github.tecnoguard.infrastructure.security.JwtAuthenticationEntryPoint;
 import com.github.tecnoguard.infrastructure.security.JwtFilter;
 import com.github.tecnoguard.infrastructure.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
@@ -29,9 +30,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
-    public SecurityConfig(JwtFilter jwtFilter) {
+    public SecurityConfig(JwtFilter jwtFilter, JwtAuthenticationEntryPoint authenticationEntryPoint) {
         this.jwtFilter = jwtFilter;
+        this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
     @Bean
@@ -40,6 +43,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(authenticationEntryPoint))
                 .authorizeHttpRequests(auth ->
                         auth
                                 .requestMatchers(

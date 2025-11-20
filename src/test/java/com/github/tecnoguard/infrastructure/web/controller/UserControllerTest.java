@@ -147,6 +147,6 @@ class UserControllerTest {
     @DisplayName("UserController - Deve retornar 401 se não autenticado")
     void shouldRejectUnauthenticatedUserAccess() throws Exception {
         mockMvc.perform(get("/api/users"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 }

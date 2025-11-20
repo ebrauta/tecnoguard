@@ -10,14 +10,20 @@ spring:
   application:
     name: tecnoguard
   datasource:
-    url: jdbc:postgresql://localhost:5432/tecnoguard
-    username: postgres
-    password: postgres
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
   h2:
     console:
-      enabled: true
-      path: /h2-console
+      enabled: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration/postgres
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false

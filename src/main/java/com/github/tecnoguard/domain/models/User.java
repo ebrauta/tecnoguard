@@ -4,8 +4,7 @@ import com.github.tecnoguard.core.exceptions.PasswordMismatchException;
 import com.github.tecnoguard.core.exceptions.UserInactiveException;
 import com.github.tecnoguard.domain.enums.UserRole;
 import com.github.tecnoguard.core.models.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,11 +23,18 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class User extends BaseEntity implements UserDetails {
+    @Column(name = "username")
     private String username;
+    @Column(name = "password")
     private String password;
+    @Column(name = "name")
     private String name;
+    @Column(name = "email")
     private String email;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_role")
     private UserRole role;
+    @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
     @Override

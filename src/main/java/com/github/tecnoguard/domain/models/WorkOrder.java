@@ -24,26 +24,38 @@ import java.util.List;
 @Setter
 public class WorkOrder extends AuditableEntity {
 
+    @Column(name = "description")
     private String description;
+    @Column(name = "equipment")
     private String equipment;
-
+    @Column(name = "client")
     private String client;
 
     @OneToMany(mappedBy = "workOrder", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<WorkOrderNote> notes = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private WOStatus status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
     private WOType type;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "priority")
     private WOPriority priority;
-
+    @Column(name = "assigned_technician")
     private String assignedTechnician;
+    @Column(name = "scheduled_date")
     private LocalDate scheduledDate;
-
+    @Column(name = "opening_date")
     private LocalDateTime openingDate;
+    @Column(name = "start_date")
     private LocalDateTime startDate;
+    @Column(name = "closing_date")
     private LocalDateTime closingDate;
+    @Column(name = "cancel_date")
     private LocalDateTime cancelDate;
-
+    @Column(name = "cancel_reason")
     private String cancelReason;
 
 

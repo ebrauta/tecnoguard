@@ -32,7 +32,7 @@ class UserServiceImplTest {
     private User user2;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         user = new User();
         user.setName("User");
         user.setEmail("user@mail.com");
@@ -104,7 +104,8 @@ class UserServiceImplTest {
         Page<User> result = service.list(pageable);
 
         Assertions.assertFalse(result.isEmpty());
-        Assertions.assertEquals(2, result.getContent().size());
+        /* o primeiro é o admin criado automaticamente */
+        Assertions.assertEquals(3, result.getContent().size());
     }
 
     @Test
@@ -127,7 +128,7 @@ class UserServiceImplTest {
     @Test
     @DisplayName("UserService - Deve respeitar limite de página")
     void shouldReturnLimitedPage() {
-        IntStream.rangeClosed(1,5).forEach(i -> {
+        IntStream.rangeClosed(1, 5).forEach(i -> {
             User u = new User();
             u.setName("User" + i);
             u.setEmail("user" + i + "@mail.com");
