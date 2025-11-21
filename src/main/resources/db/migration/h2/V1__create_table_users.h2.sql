@@ -5,8 +5,8 @@ CREATE TABLE tb_users (
     password VARCHAR(255) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     user_role VARCHAR(20) NOT NULL,
-    last_login TIMESTAMP WITHOUT TIME ZONE,
+    last_login TIMESTAMP,
     active BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    updated_at TIMESTAMP WITHOUT TIME ZONE
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP
 );
