@@ -329,7 +329,7 @@ Exemplo de header:
 |--------|----------------------------|------------------------------|-------------------|
 | GET    | /api/users                 | Retorna lista todos usuários | ADMIN, SUPERVISOR |
 | GET    | /api/users/{id}            | Retorna info do usuário      | ADMIN, SUPERVISOR |
-| POST   | /api/users                 | Registra usuário             | ADMIN             |
+| POST   | /api/users                 | Registra usuário  3-         | ADMIN             |
 | PATCH  | /api/users/{id}            | Atualiza dados do usuário    | ADMIN, SUPERVISOR |
 | PATCH  | /api/users/password/{id}   | Muda senha do usuário        | SELF, ADMIN       |
 | PATCH  | /api/users/deactivate/{id} | Desativa usuário             | ADMIN             |

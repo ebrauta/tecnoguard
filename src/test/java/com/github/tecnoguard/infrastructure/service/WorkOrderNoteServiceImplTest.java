@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class WorkOrderNoteServiceImplTest {
 
     @Autowired
-    private WorkOrderServiceImpl woService;
+    private WorkOrderOrderServiceImpl woService;
 
     @Autowired
     private WorkOrderNoteRepository repo;

@@ -1,0 +1,21 @@
+CREATE TABLE tb_workorder (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    description TEXT NOT NULL,
+    equipment VARCHAR(255),
+    client VARCHAR(255),
+    status VARCHAR(20) NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    assigned_technician VARCHAR(255),
+    priority VARCHAR(10) NOT NULL,
+    scheduled_date DATE,
+    opening_date TIMESTAMP WITHOUT TIME ZONE,
+    start_date TIMESTAMP WITHOUT TIME ZONE,
+    closing_date TIMESTAMP WITHOUT TIME ZONE,
+    cancel_date TIMESTAMP WITHOUT TIME ZONE,
+    cancel_reason TEXT,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    created_by TEXT,
+    updated_at TIMESTAMP WITHOUT TIME ZONE,
+    updated_by TEXT
+);

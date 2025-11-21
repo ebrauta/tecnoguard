@@ -4,7 +4,7 @@ import com.github.tecnoguard.core.exceptions.NotFoundException;
 import com.github.tecnoguard.core.utils.NoteFormatter;
 import com.github.tecnoguard.domain.models.WorkOrder;
 import com.github.tecnoguard.domain.service.IWorkOrderNoteService;
-import com.github.tecnoguard.domain.service.IWorkService;
+import com.github.tecnoguard.domain.service.IWorkOrderService;
 import com.github.tecnoguard.core.service.ISystemLogService;
 import com.github.tecnoguard.infrastructure.persistence.WorkOrderRepository;
 import org.springframework.data.domain.Page;
@@ -17,14 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 
 @Service
-public class WorkOrderServiceImpl implements IWorkService {
+public class WorkOrderOrderServiceImpl implements IWorkOrderService {
 
     private final WorkOrderRepository repo;
     private final IWorkOrderNoteService noteService;
     private final ISystemLogService logService;
     private final NoteFormatter noteFormatter;
 
-    public WorkOrderServiceImpl(WorkOrderRepository repo, IWorkOrderNoteService noteService, ISystemLogService logService, NoteFormatter noteFormatter) {
+    public WorkOrderOrderServiceImpl(WorkOrderRepository repo, IWorkOrderNoteService noteService, ISystemLogService logService, NoteFormatter noteFormatter) {
         this.repo = repo;
         this.noteService = noteService;
         this.logService = logService;

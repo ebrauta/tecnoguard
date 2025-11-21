@@ -9,7 +9,7 @@ import com.github.tecnoguard.core.dto.PageDTO;
 import com.github.tecnoguard.domain.models.WorkOrder;
 import com.github.tecnoguard.domain.models.WorkOrderNote;
 import com.github.tecnoguard.domain.service.IWorkOrderNoteService;
-import com.github.tecnoguard.domain.service.IWorkService;
+import com.github.tecnoguard.domain.service.IWorkOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -42,12 +42,12 @@ public class WorkOrderController {
     public static class NotePageDTO extends PageDTO<WorkOrderNoteDTO> {
     }
 
-    private final IWorkService service;
+    private final IWorkOrderService service;
     private final IWorkOrderNoteService noteService;
     private final WorkOrderMapper mapper;
     private final WorkOrderNoteMapper noteMapper;
 
-    public WorkOrderController(IWorkService service, IWorkOrderNoteService noteService, WorkOrderMapper mapper, WorkOrderNoteMapper noteMapper) {
+    public WorkOrderController(IWorkOrderService service, IWorkOrderNoteService noteService, WorkOrderMapper mapper, WorkOrderNoteMapper noteMapper) {
         this.service = service;
         this.noteService = noteService;
         this.mapper = mapper;

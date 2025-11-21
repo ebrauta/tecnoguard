@@ -9,7 +9,7 @@ import com.github.tecnoguard.domain.enums.WOType;
 import com.github.tecnoguard.domain.models.WorkOrder;
 import com.github.tecnoguard.domain.models.WorkOrderNote;
 import com.github.tecnoguard.domain.service.IWorkOrderNoteService;
-import com.github.tecnoguard.domain.service.IWorkService;
+import com.github.tecnoguard.domain.service.IWorkOrderService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,7 +39,7 @@ class WorkOrderControllerTest {
     private ObjectMapper mapper;
 
     @Autowired
-    private IWorkService service;
+    private IWorkOrderService service;
     @Autowired
     private IWorkOrderNoteService noteService;
     @Autowired

@@ -25,7 +25,7 @@ import java.util.stream.IntStream;
 class WorkOrderServiceImplTest {
 
     @Autowired
-    private WorkOrderServiceImpl service;
+    private WorkOrderOrderServiceImpl service;
 
     private WorkOrder order;
     private WorkOrder order2;
