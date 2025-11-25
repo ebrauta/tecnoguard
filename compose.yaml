@@ -12,7 +12,40 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_pgdata:/var/lib/postgresql/data
+    networks:
+      - tecnoguard-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile-prod
+    container_name: tecnoguard-app
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      #SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME} #prod
+      SPRING_DATASOURCE_URL: jdbc:h2:mem:tecnoguard_test;DB_CLOSE_DELAY=1;DB_CLOSE_ON_EXIT=FALSE #dev
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tecnoguard-network
+    restart: unless-stopped
 
 volumes:
-  pgdata:
+  postgres_pgdata:
+
+networks:
+  tecnoguard-network:
+    driver: bridge

@@ -6,7 +6,7 @@ server:
   port: 8080
 spring:
   profiles:
-    active: test
+    active: dev
   application:
     name: tecnoguard
   datasource:

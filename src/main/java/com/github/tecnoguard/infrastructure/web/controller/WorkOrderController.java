@@ -28,7 +28,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Work Orders - Ordens de Serviço", description = "Gestão do ciclo de vida das Ordens de Serviço")
@@ -220,7 +219,7 @@ public class WorkOrderController {
         String author = SecurityContextHolder.getContext().getAuthentication().getName();
         WorkOrderNote note = noteService.addNote(wo, noteWO.message(), author);
         WorkOrderNoteDTO response = noteMapper.toDTO(note);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(
@@ -343,7 +342,7 @@ public class WorkOrderController {
                             description = "Quebra de Regra de Negócio",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
                                     examples = @ExampleObject(
                                             name = "Erro: Regra de Negócio",
                                             summary = "Tipo de Usuário sem Permissão.",
@@ -352,7 +351,8 @@ public class WorkOrderController {
                                                       "timestamp": "2025-11-19T15:00:00.000",
                                                       "error": "Regra de Negócio",
                                                       "message": "Usuário não tem permissão para agendar esta OS.",
-                                                      "path": "{URL_DA_REQUISIÇÃO}
+                                                      "path": "{URL_DA_REQUISIÇÃO}"
+                                                    }
                                                     """
                                     )
                             )
@@ -417,7 +417,7 @@ public class WorkOrderController {
                             description = "Quebra de Regra de Negócio",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
                                     examples = @ExampleObject(
                                             name = "Erro: Regra de Negócio",
                                             summary = "Tipo de Usuário sem Permissão.",
@@ -490,7 +490,7 @@ public class WorkOrderController {
                             description = "Quebra de Regra de Negócio",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
                                     examples = @ExampleObject(
                                             name = "Erro: Regra de Negócio",
                                             summary = "Tipo de Usuário sem Permissão.",
@@ -564,7 +564,7 @@ public class WorkOrderController {
                             description = "Quebra de Regra de Negócio",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
                                     examples = @ExampleObject(
                                             name = "Erro: Regra de Negócio",
                                             summary = "Tipo de Usuário sem Permissão.",
