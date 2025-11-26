@@ -4,6 +4,7 @@ import com.github.tecnoguard.application.dtos.workorder.request.AssignRequest;
 import com.github.tecnoguard.application.dtos.workorder.request.CancelRequest;
 import com.github.tecnoguard.application.dtos.workorder.request.CompleteRequest;
 import com.github.tecnoguard.core.exceptions.NotFoundException;
+import com.github.tecnoguard.domain.enums.WOMaintenanceTrigger;
 import com.github.tecnoguard.domain.enums.WOPriority;
 import com.github.tecnoguard.domain.enums.WOType;
 import com.github.tecnoguard.domain.models.WorkOrder;
@@ -52,8 +53,8 @@ class WorkOrderServiceImplTest {
         order2.setType(WOType.CORRECTIVE);
         order2.setPriority(WOPriority.MEDIUM);
 
-        assignDTO = new AssignRequest("Técnico", LocalDateTime.now().plusDays(1), 1.0, 50.0);
-        completeDTO = new CompleteRequest("Solucionada", 2.0, 25.0 );
+        assignDTO = new AssignRequest("Técnico", LocalDateTime.now().plusDays(1), 1.0, 50.0, false, false, WOMaintenanceTrigger.MANUAL);
+        completeDTO = new CompleteRequest("Solucionada", 2.0, 25.0);
         cancelDTO = new CancelRequest("Cancelada");
     }
 
@@ -83,7 +84,7 @@ class WorkOrderServiceImplTest {
         Assertions.assertEquals(50.0, assigned.getEstimatedCost());
     }
 
-     @Test
+    @Test
     @DisplayName("WorkOrderService - Deve iniciar uma OS")
     void shouldStartWorkOrder() {
         WorkOrder created = service.create(order);

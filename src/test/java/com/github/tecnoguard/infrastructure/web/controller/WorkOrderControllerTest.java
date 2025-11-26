@@ -3,6 +3,7 @@ package com.github.tecnoguard.infrastructure.web.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tecnoguard.application.dtos.workorder.request.*;
 import com.github.tecnoguard.core.utils.NoteFormatter;
+import com.github.tecnoguard.domain.enums.WOMaintenanceTrigger;
 import com.github.tecnoguard.domain.enums.WOPriority;
 import com.github.tecnoguard.domain.enums.WOStatus;
 import com.github.tecnoguard.domain.enums.WOType;
@@ -66,7 +67,7 @@ class WorkOrderControllerTest {
         )
         ;
 
-        assignDTO = new AssignRequest("Técnico 1", LocalDateTime.now().plusDays(1),1.0,100.0);
+        assignDTO = new AssignRequest("Técnico 1", LocalDateTime.now().plusDays(1),1.0,100.0, false, false, WOMaintenanceTrigger.MANUAL);
         completeDTO = new CompleteRequest("Serviço concluído com sucesso", 0.5, 150.0);
         cancelDTO = new CancelRequest("Equipamento já substituído");
         noteDTO = new AddNoteWO("Teste de log via controller");
