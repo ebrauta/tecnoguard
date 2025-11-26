@@ -62,13 +62,11 @@ class WorkOrderControllerTest {
                 "Bomba 3",
                 "Cliente X",
                 WOType.CORRECTIVE,
-                WOPriority.MEDIUM,
-                1.0,
-                100.0
+                WOPriority.MEDIUM
         )
         ;
 
-        assignDTO = new AssignRequest("Técnico 1", LocalDateTime.now().plusDays(1));
+        assignDTO = new AssignRequest("Técnico 1", LocalDateTime.now().plusDays(1),1.0,100.0);
         completeDTO = new CompleteRequest("Serviço concluído com sucesso", 0.5, 150.0);
         cancelDTO = new CancelRequest("Equipamento já substituído");
         noteDTO = new AddNoteWO("Teste de log via controller");
@@ -79,6 +77,10 @@ class WorkOrderControllerTest {
         result.append(dto.assignedTechnician());
         result.append("\",\"scheduledDate\":\"");
         result.append(dto.scheduledDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        result.append("\", \"estimatedHours\":\"");
+        result.append(dto.estimatedHours());
+        result.append("\", \"estimatedCost\":\"");
+        result.append(dto.estimatedCost());
         result.append("\"}");
         return result.toString();
     }

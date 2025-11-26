@@ -44,8 +44,6 @@ class WorkOrderServiceImplTest {
         order.setClient("Cliente X");
         order.setType(WOType.CORRECTIVE);
         order.setPriority(WOPriority.MEDIUM);
-        order.setEstimatedHours(1.0);
-        order.setEstimatedCost(50.0);
 
         order2 = new WorkOrder();
         order2.setDescription("Trocar eixo");
@@ -53,10 +51,8 @@ class WorkOrderServiceImplTest {
         order2.setClient("Cliente X");
         order2.setType(WOType.CORRECTIVE);
         order2.setPriority(WOPriority.MEDIUM);
-        order2.setEstimatedHours(2.0);
-        order2.setEstimatedCost(100.0);
 
-        assignDTO = new AssignRequest("Técnico", LocalDateTime.now().plusDays(1));
+        assignDTO = new AssignRequest("Técnico", LocalDateTime.now().plusDays(1), 1.0, 50.0);
         completeDTO = new CompleteRequest("Solucionada", 2.0, 25.0 );
         cancelDTO = new CancelRequest("Cancelada");
     }
@@ -64,16 +60,14 @@ class WorkOrderServiceImplTest {
     @Test
     @DisplayName("WorkOrderService - Deve criar uma OS")
     void shouldCreateWorkOrder() {
-        WorkOrder w = service.create(order);
+        WorkOrder created = service.create(order);
 
-        Assertions.assertNotNull(w.getId());
-        Assertions.assertEquals("Trocar motor", w.getDescription());
-        Assertions.assertEquals("Bomba 3", w.getEquipment());
-        Assertions.assertEquals("Cliente X", w.getClient());
-        Assertions.assertEquals("CORRECTIVE", w.getType().toString());
-        Assertions.assertEquals("OPEN", w.getStatus().toString());
-        Assertions.assertEquals(1.0, w.getEstimatedHours());
-        Assertions.assertEquals(50.0, w.getEstimatedCost());
+        Assertions.assertNotNull(created.getId());
+        Assertions.assertEquals("Trocar motor", created.getDescription());
+        Assertions.assertEquals("Bomba 3", created.getEquipment());
+        Assertions.assertEquals("Cliente X", created.getClient());
+        Assertions.assertEquals("CORRECTIVE", created.getType().toString());
+        Assertions.assertEquals("OPEN", created.getStatus().toString());
 
     }
 
@@ -85,6 +79,8 @@ class WorkOrderServiceImplTest {
 
         Assertions.assertEquals("Técnico", assigned.getAssignedTechnician());
         Assertions.assertEquals("SCHEDULED", assigned.getStatus().toString());
+        Assertions.assertEquals(1.0, assigned.getEstimatedHours());
+        Assertions.assertEquals(50.0, assigned.getEstimatedCost());
     }
 
      @Test
@@ -156,8 +152,6 @@ class WorkOrderServiceImplTest {
             orderTest.setClient("Cliente " + i);
             orderTest.setType(WOType.CORRECTIVE);
             orderTest.setPriority(WOPriority.MEDIUM);
-            orderTest.setEstimatedHours(1.0);
-            orderTest.setEstimatedCost(10.0);
             service.create(orderTest);
         });
 
