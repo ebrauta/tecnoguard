@@ -1,7 +1,9 @@
 package com.github.tecnoguard.application.dtos.user.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.tecnoguard.domain.enums.UserRole;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 
@@ -18,11 +20,14 @@ public record UserResponseDTO(
         UserRole role,
         @Schema(description = "Se usuário está ativo", example = "true")
         Boolean active,
-        @Schema(description = "Data de criação", example = "2025-11-15T05:00:00.0000000000")
+        @Schema(description = "Data de criação", example = "18/12/2025 09:30")
+        @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
         LocalDateTime createdAt,
-        @Schema(description = "Data de atualização", example = "2025-11-15T15:00:00.0000000000")
+        @Schema(description = "Data de atualização", example = "18/12/2025 09:30")
+        @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
         LocalDateTime updatedAt,
-        @Schema(description = "Data do ultimo login", example = "2025-11-16T15:00:00.0000000000")
+        @Schema(description = "Data do ultimo login", example = "18/12/2025 09:30")
+        @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
         LocalDateTime lastLogin
 ) {
 }

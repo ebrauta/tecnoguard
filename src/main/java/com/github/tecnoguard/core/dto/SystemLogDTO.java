@@ -1,5 +1,6 @@
 package com.github.tecnoguard.core.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
@@ -7,7 +8,8 @@ import java.time.LocalDateTime;
 public record SystemLogDTO(
         @Schema(description = "Identificação do Log", example = "1")
         Long id,
-        @Schema(description = "Data e hora da ação", example = "2025-11-19T15:00:00.00000000")
+        @Schema(description = "Data e hora da ação", example = "18/12/2025 09:30")
+        @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
         LocalDateTime timestamp,
         @Schema(description = "Usuário que praticou a ação", example = "nome.sobrenome")
         String actorUsername,

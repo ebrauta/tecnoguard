@@ -1,5 +1,6 @@
 package com.github.tecnoguard.application.dtos.workorder.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 public class CancelResponse extends BaseWOResponse {
     @Schema(description = "Motivo do cancelamento", example = "Máquina vendida.")
     String cancelReason;
-    @Schema(description = "Data de Cancelamento", example = "2025-11-15")
+    @Schema(description = "Data de Cancelamento", example = "18/12/2025")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     LocalDateTime cancelDate;
 }
