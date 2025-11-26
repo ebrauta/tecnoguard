@@ -5,6 +5,7 @@ import com.github.tecnoguard.application.dtos.auth.response.LoginResponseDTO;
 import com.github.tecnoguard.application.dtos.auth.response.UserInfoDTO;
 import com.github.tecnoguard.core.dto.ErrorResponseDTO;
 import com.github.tecnoguard.core.exceptions.AccessDeniedBusiness;
+import com.github.tecnoguard.core.exceptions.NotFoundException;
 import com.github.tecnoguard.core.exceptions.WrongLoginException;
 import com.github.tecnoguard.domain.models.User;
 import com.github.tecnoguard.infrastructure.persistence.UserRepository;
@@ -129,6 +130,8 @@ public class AuthController {
         if (auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser")) {
             throw new AccessDeniedBusiness("Erro de autenticação");
         }
-        return ResponseEntity.ok(new UserInfoDTO(auth.getName(), auth.getAuthorities().toString()));
+        User authUser = repo.findByUsername(auth.getName()).orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+        UserInfoDTO response = new UserInfoDTO(authUser.getName(), authUser.getUsername(), auth.getAuthorities().toString());
+        return ResponseEntity.ok(response);
     }
 }
