@@ -1,6 +1,7 @@
 package com.github.tecnoguard.application.dtos.workorder.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.github.tecnoguard.domain.enums.WOMaintenanceTrigger;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,4 +25,10 @@ public class CompleteResponse extends BaseWOResponse {
     Double actualHours;
     @Schema(description = "custo total", example = "1.0")
     Double actualCost;
+    @Schema(description = "requer parada de fábrica?", example = "true")
+    Boolean requiresShutdown;
+    @Schema(description = "tem risco de segurança?", example = "true")
+    Boolean safetyRisk;
+    @Schema(description = "motivo da manutenção", example = "CONDITION_BASED")
+    WOMaintenanceTrigger trigger;
 }

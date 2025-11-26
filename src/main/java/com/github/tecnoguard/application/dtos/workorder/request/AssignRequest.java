@@ -2,6 +2,7 @@ package com.github.tecnoguard.application.dtos.workorder.request;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.github.tecnoguard.core.utils.LocalDateTimeDeserializer;
+import com.github.tecnoguard.domain.enums.WOMaintenanceTrigger;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
@@ -23,6 +24,9 @@ public record AssignRequest(
         @NotNull(message = "Uma previsão de custo é obrigatória")
         @Min(value = 0, message = "O custo não pode ser negativo")
         @Schema(description = "custo previsto", example = "1.0")
-        Double estimatedCost
+        Double estimatedCost,
+        Boolean requiresShutdown,
+        Boolean safetyRisk,
+        WOMaintenanceTrigger trigger
 ) {
 }

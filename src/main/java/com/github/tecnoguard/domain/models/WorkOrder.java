@@ -1,6 +1,7 @@
 package com.github.tecnoguard.domain.models;
 
 import com.github.tecnoguard.core.exceptions.BusinessException;
+import com.github.tecnoguard.domain.enums.WOMaintenanceTrigger;
 import com.github.tecnoguard.domain.enums.WOPriority;
 import com.github.tecnoguard.domain.enums.WOStatus;
 import com.github.tecnoguard.domain.enums.WOType;
@@ -65,7 +66,12 @@ public class WorkOrder extends AuditableEntity {
     private LocalDateTime cancelDate;
     @Column(name = "cancel_reason")
     private String cancelReason;
-
+    @Column(name = "requires_shutdown")
+    private Boolean requiresShutdown = false;
+    @Column(name = "safety_risk")
+    private Boolean safetyRisk = false;
+    @Column(name = "maintenance_trigger")
+    private WOMaintenanceTrigger trigger = WOMaintenanceTrigger.MANUAL;
 
     public void create() {
         this.status = WOStatus.OPEN;
