@@ -2,6 +2,7 @@ package com.github.tecnoguard.infrastructure.service;
 
 import com.github.tecnoguard.application.dtos.user.request.UpdateUserDTO;
 import com.github.tecnoguard.application.mappers.users.UserMapper;
+import com.github.tecnoguard.core.exceptions.BusinessException;
 import com.github.tecnoguard.core.exceptions.DuplicatedException;
 import com.github.tecnoguard.core.exceptions.NotFoundException;
 import com.github.tecnoguard.domain.models.User;
@@ -21,13 +22,11 @@ public class UserServiceImpl implements IUserService {
 
     private final UserRepository repo;
     private final PasswordEncoder encoder;
-    private final UserMapper mapper;
     private final ISystemLogService logService;
 
-    public UserServiceImpl(UserRepository repo, PasswordEncoder encoder, UserMapper mapper, ISystemLogService logService) {
+    public UserServiceImpl(UserRepository repo, PasswordEncoder encoder, ISystemLogService logService) {
         this.repo = repo;
         this.encoder = encoder;
-        this.mapper = mapper;
         this.logService = logService;
 
     }
@@ -35,6 +34,11 @@ public class UserServiceImpl implements IUserService {
     private String getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return (auth != null) ? auth.getName() : "SYSTEM";
+    }
+
+    private Boolean isAdmin(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth != null && auth.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN") || r.getAuthority().equals("ADMIN"));
     }
 
     @Override
@@ -61,9 +65,11 @@ public class UserServiceImpl implements IUserService {
     @Transactional
     public User update(Long id, User user) {
         User found = findById(id);
-        UpdateUserDTO dto = new UpdateUserDTO(user.getName(), user.getEmail(), user.getRole());
-        mapper.updateEntity(found, dto);
-        User response = repo.save(found);
+        if(!found.getUsername().equals(getCurrentUser()) && !isAdmin()) {
+            throw new BusinessException("Este usuário não pode alterar dados de outro usuário");
+        }
+        user.setPassword(encoder.encode(user.getPassword()));
+        User response = repo.save(user);
         logService.log(
                 "USER_UPDATED",
                 "USER",
@@ -77,6 +83,9 @@ public class UserServiceImpl implements IUserService {
     @Transactional
     public void changePassword(Long id, String currentPassword, String newPassword) {
         User found = findById(id);
+        if(!found.getUsername().equals(getCurrentUser()) && !isAdmin()){
+            throw new BusinessException("Este usuário não pode mudar senha de outro usuário");
+        }
         found.changePassword(encoder, currentPassword, newPassword);
         User response = repo.save(found);
         logService.log(

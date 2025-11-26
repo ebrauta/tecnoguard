@@ -275,7 +275,7 @@ public class UserController {
                     )
             }
     )
-    @PatchMapping("/deactivate/{id}")
+    @DeleteMapping("/deactivate/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR')")
     public ResponseEntity<Void> deactivate(@PathVariable Long id) {
         service.deactivate(id);
