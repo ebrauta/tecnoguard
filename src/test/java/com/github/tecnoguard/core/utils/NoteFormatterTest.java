@@ -50,9 +50,10 @@ class NoteFormatterTest {
     @Test
     @DisplayName("NoteFormatter - Deve gerar mensagem de agendamento corretamente")
     void shouldGenerateAssignedMessage() {
-        LocalDate date = LocalDate.of(2025, 10, 15);
+        LocalDateTime date = LocalDate.of(2025, 10, 15).atStartOfDay();
         String result = formatter.assigned("José", date, "João");
-        assertTrue(result.contains("OS agendada para o técnico José no dia 15/10/2025 por João"));
+
+        assertTrue(result.contains("OS agendada para o técnico José por João - Data: 15/10/2025"));
     }
 
     @Test

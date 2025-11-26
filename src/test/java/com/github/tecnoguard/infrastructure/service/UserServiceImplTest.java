@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.stream.IntStream;
 
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("dev")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional
 class UserServiceImplTest {

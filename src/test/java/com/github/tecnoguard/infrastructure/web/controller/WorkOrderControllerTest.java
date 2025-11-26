@@ -19,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -30,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("dev")
 class WorkOrderControllerTest {
 
     @Autowired
@@ -58,11 +60,14 @@ class WorkOrderControllerTest {
                 "Bomba 3",
                 "Cliente X",
                 WOType.CORRECTIVE,
-                WOPriority.MEDIUM)
+                WOPriority.MEDIUM,
+                1.0,
+                100.0
+        )
         ;
 
-        assignDTO = new AssignRequest("Técnico 1", LocalDate.now());
-        completeDTO = new CompleteRequest("Serviço concluído com sucesso");
+        assignDTO = new AssignRequest("Técnico 1");
+        completeDTO = new CompleteRequest("Serviço concluído com sucesso", 0.5, 150.0);
         cancelDTO = new CancelRequest("Equipamento já substituído");
         noteDTO = new AddNoteWO("Teste de log via controller");
     }
@@ -93,6 +98,17 @@ class WorkOrderControllerTest {
         createWorkOrder();
     }
 
+    @Test
+    @DisplayName("WorkOrderController - Não deve criar se não tiver papel de ADMIN, PLANNER ou OPERATOR")
+    @WithMockUser(username = "teste", roles = {"TECHNICIAN"})
+    void create_shouldThrowAccessDeniedException_whenUserTryCreateButDoesNotHaveRequiredRole() throws Exception {
+        mockMvc.perform(
+                        post("/api/workorders")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(order))
+                )
+                .andExpect(status().isForbidden());
+    }
 
     @Test
     @DisplayName("WorkOrderController - Deve listar todas as OS")
@@ -136,6 +152,18 @@ class WorkOrderControllerTest {
                 .andExpect(jsonPath("$.status").value("SCHEDULED"));
     }
 
+    @Test
+    @DisplayName("WorkOrderController - Não deve agendar se não tiver papel de ADMIN ou PLANNER")
+    @WithMockUser(username = "teste", roles = {"OPERATOR"})
+    void create_shouldThrowAccessDeniedException_whenUserTryAssignButDoesNotHaveRequiredRole() throws Exception {
+        long id = createWorkOrder();
+        mockMvc.perform(
+                        patch("/api/workorders/assign/{id}", id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(order))
+                )
+                .andExpect(status().isForbidden());
+    }
 
     @Test
     @DisplayName("WorkOrderController - Deve iniciar execução (SCHEDULED → IN_PROGRESS)")
@@ -241,7 +269,7 @@ class WorkOrderControllerTest {
         var result = mockMvc.perform(post("/api/workorders/log/{id}", wo.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(noteDTO)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.author").value("eduardo"))
                 .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("Teste de log")))
                 .andReturn();

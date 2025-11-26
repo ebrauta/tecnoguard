@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("dev")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional
 class WorkOrderNoteServiceImplTest {
 
     @Autowired
-    private WorkOrderOrderServiceImpl woService;
+    private WorkOrderServiceImpl woService;
 
     @Autowired
     private WorkOrderNoteRepository repo;
@@ -42,6 +42,8 @@ class WorkOrderNoteServiceImplTest {
         created.setClient("Cliente X");
         created.setType(WOType.CORRECTIVE);
         created.setPriority(WOPriority.MEDIUM);
+        created.setEstimatedHours(1.0);
+        created.setEstimatedCost(10.0);
         workOrder = woService.create(created);
     }
 

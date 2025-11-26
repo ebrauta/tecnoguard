@@ -1,6 +1,8 @@
 package com.github.tecnoguard.infrastructure.service;
 
-import com.github.tecnoguard.core.exceptions.BusinessException;
+import com.github.tecnoguard.application.dtos.workorder.request.AssignRequest;
+import com.github.tecnoguard.application.dtos.workorder.request.CancelRequest;
+import com.github.tecnoguard.application.dtos.workorder.request.CompleteRequest;
 import com.github.tecnoguard.core.exceptions.NotFoundException;
 import com.github.tecnoguard.domain.enums.WOPriority;
 import com.github.tecnoguard.domain.enums.WOType;
@@ -15,20 +17,23 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.stream.IntStream;
 
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("dev")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional
 class WorkOrderServiceImplTest {
 
     @Autowired
-    private WorkOrderOrderServiceImpl service;
+    private WorkOrderServiceImpl service;
 
     private WorkOrder order;
     private WorkOrder order2;
+
+    private AssignRequest assignDTO;
+    private CompleteRequest completeDTO;
+    private CancelRequest cancelDTO;
 
     @BeforeEach
     void setUp() {
@@ -38,12 +43,21 @@ class WorkOrderServiceImplTest {
         order.setClient("Cliente X");
         order.setType(WOType.CORRECTIVE);
         order.setPriority(WOPriority.MEDIUM);
+        order.setEstimatedHours(1.0);
+        order.setEstimatedCost(50.0);
+
         order2 = new WorkOrder();
         order2.setDescription("Trocar eixo");
         order2.setEquipment("Bomba 3");
         order2.setClient("Cliente X");
         order2.setType(WOType.CORRECTIVE);
         order2.setPriority(WOPriority.MEDIUM);
+        order2.setEstimatedHours(2.0);
+        order2.setEstimatedCost(100.0);
+
+        assignDTO = new AssignRequest("Técnico");
+        completeDTO = new CompleteRequest("Solucionada", 2.0, 25.0 );
+        cancelDTO = new CancelRequest("Cancelada");
     }
 
     @Test
@@ -57,6 +71,8 @@ class WorkOrderServiceImplTest {
         Assertions.assertEquals("Cliente X", w.getClient());
         Assertions.assertEquals("CORRECTIVE", w.getType().toString());
         Assertions.assertEquals("OPEN", w.getStatus().toString());
+        Assertions.assertEquals(1.0, w.getEstimatedHours());
+        Assertions.assertEquals(50.0, w.getEstimatedCost());
 
     }
 
@@ -64,10 +80,9 @@ class WorkOrderServiceImplTest {
     @DisplayName("WorkOrderService - Deve agendar uma OS")
     void shouldAssignWorkOrder() {
         WorkOrder created = service.create(order);
-        WorkOrder assigned = service.assign(created.getId(), "Técnico", LocalDate.now());
+        WorkOrder assigned = service.assign(created.getId(), assignDTO);
 
         Assertions.assertEquals("Técnico", assigned.getAssignedTechnician());
-        Assertions.assertEquals(LocalDate.now(), assigned.getScheduledDate());
         Assertions.assertEquals("SCHEDULED", assigned.getStatus().toString());
     }
 
@@ -75,7 +90,7 @@ class WorkOrderServiceImplTest {
     @DisplayName("WorkOrderService - Deve iniciar uma OS")
     void shouldStartWorkOrder() {
         WorkOrder created = service.create(order);
-        WorkOrder assigned = service.assign(created.getId(), "Técnico", LocalDate.now());
+        WorkOrder assigned = service.assign(created.getId(), assignDTO);
         WorkOrder started = service.start(assigned.getId());
 
         Assertions.assertEquals("IN_PROGRESS", started.getStatus().toString());
@@ -85,20 +100,21 @@ class WorkOrderServiceImplTest {
     @DisplayName("WorkOrderService - Deve completar uma OS")
     void shouldCompleteWorkOrder() {
         WorkOrder created = service.create(order);
-        WorkOrder assigned = service.assign(created.getId(), "Técnico", LocalDate.now());
+        WorkOrder assigned = service.assign(created.getId(), assignDTO);
         WorkOrder started = service.start(assigned.getId());
-        WorkOrder completed = service.complete(started.getId(), "Solucionada");
-
+        WorkOrder completed = service.complete(started.getId(), completeDTO);
         Assertions.assertEquals("COMPLETED", completed.getStatus().toString());
+        Assertions.assertEquals(2.0, completed.getActualHours());
+        Assertions.assertEquals(25.0, completed.getActualCost());
     }
 
     @Test
     @DisplayName("WorkOrderService - Deve cancelar uma OS")
     void shouldCancelWorkOrder() {
         WorkOrder created = service.create(order);
-        WorkOrder assigned = service.assign(created.getId(), "Técnico", LocalDate.now());
+        WorkOrder assigned = service.assign(created.getId(), assignDTO);
         WorkOrder started = service.start(assigned.getId());
-        WorkOrder canceled = service.cancel(started.getId(), "Cancelada");
+        WorkOrder canceled = service.cancel(started.getId(), cancelDTO);
 
         Assertions.assertEquals("CANCELLED", canceled.getStatus().toString());
         Assertions.assertEquals("Cancelada", canceled.getCancelReason());
@@ -139,6 +155,8 @@ class WorkOrderServiceImplTest {
             orderTest.setClient("Cliente " + i);
             orderTest.setType(WOType.CORRECTIVE);
             orderTest.setPriority(WOPriority.MEDIUM);
+            orderTest.setEstimatedHours(1.0);
+            orderTest.setEstimatedCost(10.0);
             service.create(orderTest);
         });
 
@@ -156,14 +174,4 @@ class WorkOrderServiceImplTest {
     void shouldThrowWhenWorkOrderNotFound() {
         Assertions.assertThrows(NotFoundException.class, () -> service.findById(999L));
     }
-
-    @Test
-    @DisplayName("WorkOrderService - Não deve agendar uma Os com data anterior a hoje")
-    void shouldNotAssignWorkOrderWithDateBeforeToday() {
-        WorkOrder created = service.create(order);
-
-        Assertions.assertThrows(BusinessException.class, () -> service.assign(created.getId(), "Técnico", LocalDate.of(2025, 11, 10)));;
-    }
-
-
 }
