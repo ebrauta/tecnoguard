@@ -1,9 +1,11 @@
 package com.github.tecnoguard.infrastructure.service;
 
+import com.github.tecnoguard.core.exceptions.BusinessException;
 import com.github.tecnoguard.core.exceptions.NotFoundException;
 import com.github.tecnoguard.domain.enums.UserRole;
 import com.github.tecnoguard.domain.models.User;
 import org.junit.jupiter.api.*;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,8 +66,9 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DisplayName("UserService - Deve atualizar um usuário")
-    void shouldUpdateUser() {
+    @DisplayName("UserService - Deve atualizar um usuário somente se for admin")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void shouldUpdateUserIfAdmin() {
         User u = service.create(user);
         User updated = service.update(u.getId(), user2);
 
@@ -74,12 +78,53 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DisplayName("UserService - Deve mudar a senha de um usuário")
-    void shouldChangeUsersPassword() {
+    @DisplayName("UserService - Deve atualizar um usuário somente se for o mesmo usuário")
+    @WithMockUser(username = "user", roles = {"TECHNICIAN"})
+    void shouldUpdateUserIfTheSameUser() {
+        User u = service.create(user);
+        User updated = service.update(u.getId(), user2);
+
+        Assertions.assertEquals("User novo", updated.getName());
+        Assertions.assertEquals("novo@mail.com", updated.getEmail());
+        Assertions.assertEquals("PLANNER", updated.getRole().toString());
+    }
+
+    @Test
+    @DisplayName("UserService - Deve lançar uma exception caso o usuário tente alterar outro usuário")
+    @WithMockUser(username = "user_2", roles = {"OPERATOR"})
+    void shouldThrowExceptionIfUpdateUser() {
+        User u = service.create(user);
+
+        Assertions.assertThrows(BusinessException.class, () -> service.update(u.getId(), user2));
+    }
+
+    @Test
+    @DisplayName("UserService - Deve mudar a senha de um usuário somente se for admin")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void shouldChangeUsersPasswordIfAdmin() {
         User u = service.create(user);
         service.changePassword(u.getId(), "123", "abc");
 
         Assertions.assertTrue(encoder.matches("abc", service.findById(u.getId()).getPassword()));
+    }
+
+    @Test
+    @DisplayName("UserService - Deve mudar a senha de um usuário somente se for o mesmo usuário")
+    @WithMockUser(username = "user", roles = {"Technician"})
+    void shouldChangeUsersPasswordIfTheSameUser() {
+        User u = service.create(user);
+        service.changePassword(u.getId(), "123", "abc");
+
+        Assertions.assertTrue(encoder.matches("abc", service.findById(u.getId()).getPassword()));
+    }
+
+    @Test
+    @DisplayName("UserService - Deve lançar uma exception caso o usuário tente alterar senha de outro usuário")
+    @WithMockUser(username = "user_2", roles = {"OPERATOR"})
+    void shouldThrowExceptionIfChangePasswordAnotherUser() {
+        User u = service.create(user);
+
+        Assertions.assertThrows(BusinessException.class, () -> service.changePassword(u.getId(), "123", "abc"));
     }
 
     @Test
@@ -104,7 +149,6 @@ class UserServiceImplTest {
         Page<User> result = service.list(pageable);
 
         Assertions.assertFalse(result.isEmpty());
-        /* o primeiro é o admin criado automaticamente */
         Assertions.assertEquals(3, result.getContent().size());
     }
 

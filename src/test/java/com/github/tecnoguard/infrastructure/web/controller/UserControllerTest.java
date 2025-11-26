@@ -118,7 +118,7 @@ class UserControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldDeactivateUser() throws Exception {
         long id = registerUser();
-        mockMvc.perform(patch("/api/users/deactivate/{id}", id))
+        mockMvc.perform(delete("/api/users/deactivate/{id}", id))
                 .andExpect(status().isNoContent());
     }
 
