@@ -2,6 +2,7 @@ package com.github.tecnoguard.core.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class PageDTO<T> {
     private List<T> content;
     @Schema(description = "Número da página", example = "1")
@@ -26,8 +28,5 @@ public class PageDTO<T> {
         this.pageSize = page.getSize();
         this.totalElements = page.getTotalElements();
         this.totalPages = page.getTotalPages();
-    }
-
-    public PageDTO() {
     }
 }

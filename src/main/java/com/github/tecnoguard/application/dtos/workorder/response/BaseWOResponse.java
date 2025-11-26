@@ -22,7 +22,7 @@ public abstract class BaseWOResponse {
     String equipment;
     @Schema(description = "Cliente onde o serviço é executado", example = "Cliente X")
     String client;
-    @Schema(description = "Tipo de manutenção", example = "CORRETIVE")
+    @Schema(description = "Tipo de manutenção", example = "CORRECTIVE")
     WOType type;
     @Schema(description = "Prioridade do serviço", example = "MEDIUM")
     WOPriority priority;
