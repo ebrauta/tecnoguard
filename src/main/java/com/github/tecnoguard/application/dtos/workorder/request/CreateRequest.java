@@ -20,15 +20,6 @@ public record CreateRequest(
         WOType type,
         @NotNull(message = "Prioridade é obrigatória")
         @Schema(description = "Prioridade do serviço", example = "MEDIUM")
-        WOPriority priority,
-        @NotNull(message = "Uma previsão de tempo de trabalho é obrigatória")
-        @DecimalMin(value = "0.0", message = "O tempo deve ser maior que 0h")
-        @DecimalMax(value = "8760.0", message = "O tempo deve ser menor que 8760h (1 ano)")
-        @Schema(description = "tempo previsto - calculado pela lista de tarefas", example = "1.0")
-        Double estimatedHours,
-        @NotNull(message = "Uma previsão de custo é obrigatória")
-        @Min(value = 0, message = "O custo não pode ser negativo")
-        @Schema(description = "custo previsto", example = "1.0")
-        Double estimatedCost
+        WOPriority priority
 ) {
 }
