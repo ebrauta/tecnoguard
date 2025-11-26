@@ -23,6 +23,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -66,11 +68,21 @@ class WorkOrderControllerTest {
         )
         ;
 
-        assignDTO = new AssignRequest("Técnico 1");
+        assignDTO = new AssignRequest("Técnico 1", LocalDateTime.now().plusDays(1));
         completeDTO = new CompleteRequest("Serviço concluído com sucesso", 0.5, 150.0);
         cancelDTO = new CancelRequest("Equipamento já substituído");
         noteDTO = new AddNoteWO("Teste de log via controller");
     }
+    private String assignToJson(AssignRequest dto){
+        StringBuffer result = new StringBuffer();
+        result.append("{\"assignedTechnician\":\"");
+        result.append(dto.assignedTechnician());
+        result.append("\",\"scheduledDate\":\"");
+        result.append(dto.scheduledDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        result.append("\"}");
+        return result.toString();
+    }
+
 
     private long createWorkOrder() throws Exception {
         String response = mockMvc.perform(
@@ -144,11 +156,11 @@ class WorkOrderControllerTest {
         mockMvc.perform(
                         patch("/api/workorders/assign/{id}", id)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(mapper.writeValueAsString(assignDTO))
+                                .content(assignToJson(assignDTO))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.assignedTechnician").value("Técnico 1"))
-                .andExpect(jsonPath("$.scheduledDate").value(LocalDate.now().toString()))
+                .andExpect(jsonPath("$.scheduledDate").value(LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))))
                 .andExpect(jsonPath("$.status").value("SCHEDULED"));
     }
 
@@ -173,7 +185,7 @@ class WorkOrderControllerTest {
 
         mockMvc.perform(patch("/api/workorders/assign/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(assignDTO))
+                        .content(assignToJson(assignDTO))
                 )
                 .andExpect(status().isOk());
 
@@ -192,7 +204,7 @@ class WorkOrderControllerTest {
         mockMvc.perform(
                         patch("/api/workorders/assign/{id}", id)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(mapper.writeValueAsString(assignDTO))
+                                .content(assignToJson(assignDTO))
                 )
                 .andExpect(status().isOk());
 
@@ -216,7 +228,7 @@ class WorkOrderControllerTest {
 
         mockMvc.perform(patch("/api/workorders/assign/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(assignDTO))
+                        .content(assignToJson(assignDTO))
                 )
                 .andExpect(status().isOk());
 

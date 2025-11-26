@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.stream.IntStream;
 
 @SpringBootTest
@@ -55,7 +56,7 @@ class WorkOrderServiceImplTest {
         order2.setEstimatedHours(2.0);
         order2.setEstimatedCost(100.0);
 
-        assignDTO = new AssignRequest("Técnico");
+        assignDTO = new AssignRequest("Técnico", LocalDateTime.now().plusDays(1));
         completeDTO = new CompleteRequest("Solucionada", 2.0, 25.0 );
         cancelDTO = new CancelRequest("Cancelada");
     }
