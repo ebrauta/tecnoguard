@@ -1,6 +1,8 @@
 package com.github.tecnoguard.infrastructure.service;
 
+import com.github.tecnoguard.core.exceptions.BusinessException;
 import com.github.tecnoguard.core.utils.NoteFormatter;
+import com.github.tecnoguard.domain.enums.WOStatus;
 import com.github.tecnoguard.domain.models.WorkOrder;
 import com.github.tecnoguard.domain.models.WorkOrderNote;
 import com.github.tecnoguard.domain.service.IWorkOrderNoteService;
@@ -27,6 +29,8 @@ public class WorkOrderNoteServiceImpl implements IWorkOrderNoteService {
 
     @Override
     public WorkOrderNote addNote(WorkOrder wo, String message, String author) {
+        boolean isFinishWO = wo.getStatus() == WOStatus.COMPLETED || wo.getStatus() == WOStatus.CANCELLED;
+        if(!author.equals("SYSTEM") && isFinishWO) throw new BusinessException("Não é possível adicionar notas a OS finalizadas ou canceladas");
         WorkOrderNote note = new WorkOrderNote();
         note.setWorkOrder(wo);
         note.setAuthor(author);
