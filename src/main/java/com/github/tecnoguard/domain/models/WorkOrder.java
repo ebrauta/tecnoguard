@@ -43,10 +43,18 @@ public class WorkOrder extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "priority")
     private WOPriority priority;
+    @Column(name = "estimated_hours")
+    private Double estimatedHours;
+    @Column(name = "actual_hours")
+    private Double actualHours;
+    @Column(name = "estimated_cost")
+    private Double estimatedCost;
+    @Column(name = "actual_cost")
+    private Double actualCost;
     @Column(name = "assigned_technician")
     private String assignedTechnician;
     @Column(name = "scheduled_date")
-    private LocalDate scheduledDate;
+    private LocalDateTime scheduledDate;
     @Column(name = "opening_date")
     private LocalDateTime openingDate;
     @Column(name = "start_date")
@@ -64,11 +72,8 @@ public class WorkOrder extends AuditableEntity {
         this.openingDate = LocalDateTime.now();
     }
 
-    public void assign(String technician, LocalDate date) {
+    public void assign() {
         if (this.status != WOStatus.OPEN) throw new BusinessException("Somente OS abertas podem ser agendadas.");
-        if (date.isBefore(LocalDate.now())) throw new BusinessException("A data de agendamento não pode ser anterior a data atual");
-        this.assignedTechnician = technician;
-        this.scheduledDate = date;
         this.status = WOStatus.SCHEDULED;
     }
 
@@ -85,9 +90,8 @@ public class WorkOrder extends AuditableEntity {
         this.closingDate = LocalDateTime.now();
     }
 
-    public void cancel(String reason) {
+    public void cancel() {
         if (this.status == WOStatus.COMPLETED) throw new BusinessException("OS concluídas não podem ser canceladas.");
-        this.cancelReason = reason;
         this.cancelDate = LocalDateTime.now();
         this.status = WOStatus.CANCELLED;
     }
