@@ -1,5 +1,10 @@
 package com.github.tecnoguard.infrastructure.service;
 
+import com.github.tecnoguard.application.dtos.workorder.request.AssignRequest;
+import com.github.tecnoguard.application.dtos.workorder.request.CancelRequest;
+import com.github.tecnoguard.application.dtos.workorder.request.CompleteRequest;
+import com.github.tecnoguard.application.mappers.workorder.WorkOrderMapper;
+import com.github.tecnoguard.core.exceptions.BusinessException;
 import com.github.tecnoguard.core.exceptions.NotFoundException;
 import com.github.tecnoguard.core.utils.NoteFormatter;
 import com.github.tecnoguard.domain.models.WorkOrder;
@@ -15,20 +20,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
-public class WorkOrderOrderServiceImpl implements IWorkOrderService {
+public class WorkOrderServiceImpl implements IWorkOrderService {
 
     private final WorkOrderRepository repo;
     private final IWorkOrderNoteService noteService;
     private final ISystemLogService logService;
     private final NoteFormatter noteFormatter;
+    private final WorkOrderMapper mapper;
 
-    public WorkOrderOrderServiceImpl(WorkOrderRepository repo, IWorkOrderNoteService noteService, ISystemLogService logService, NoteFormatter noteFormatter) {
+    public WorkOrderServiceImpl(WorkOrderRepository repo, IWorkOrderNoteService noteService, ISystemLogService logService, NoteFormatter noteFormatter, WorkOrderMapper mapper) {
         this.repo = repo;
         this.noteService = noteService;
         this.logService = logService;
         this.noteFormatter = noteFormatter;
+        this.mapper = mapper;
     }
 
     private String getCurrentUser() {
@@ -54,17 +62,19 @@ public class WorkOrderOrderServiceImpl implements IWorkOrderService {
 
     @Override
     @Transactional
-    public WorkOrder assign(Long id, String tech, LocalDate date) {
+    public WorkOrder assign(Long id, AssignRequest dto) {
         WorkOrder w = findById(id);
-        w.assign(tech, date);
+        w.assign();
+        if(dto.scheduledDate().isBefore(LocalDateTime.now())) throw new BusinessException("A Data de Agendamento não pode ser anterior a hoje");
+        mapper.updateAssign(w, dto);
         WorkOrder response = repo.save(w);
         String user = getCurrentUser();
-        noteService.addNote(response, noteFormatter.assigned(tech, date, user), "SYSTEM");
+        noteService.addNote(response, noteFormatter.assigned(response.getAssignedTechnician(), response.getScheduledDate(), user), "SYSTEM");
         logService.log(
                 "WORK_ORDER_ASSIGNED",
                 "WORK_ORDER",
                 w.getId(),
-                String.format("Técnico %s designado por %s ", tech, getCurrentUser())
+                String.format("Técnico %s designado por %s ", response.getAssignedTechnician(), getCurrentUser())
         );
         return response;
     }
@@ -88,12 +98,13 @@ public class WorkOrderOrderServiceImpl implements IWorkOrderService {
 
     @Override
     @Transactional
-    public WorkOrder complete(Long id, String summary) {
+    public WorkOrder complete(Long id, CompleteRequest dto) {
         WorkOrder w = findById(id);
         w.complete();
+        mapper.updateComplete(w, dto);
         WorkOrder response = repo.save(w);
         String user = getCurrentUser();
-        noteService.addNote(response, noteFormatter.completed(summary, response.getOpeningDate(), user), "SYSTEM");
+        noteService.addNote(response, noteFormatter.completed(dto.log(), response.getOpeningDate(), user), "SYSTEM");
         logService.log(
                 "WORK_ORDER_COMPLETED",
                 "WORK_ORDER",
@@ -105,12 +116,13 @@ public class WorkOrderOrderServiceImpl implements IWorkOrderService {
 
     @Override
     @Transactional
-    public WorkOrder cancel(Long id, String reason) {
+    public WorkOrder cancel(Long id, CancelRequest dto) {
         WorkOrder w = findById(id);
-        w.cancel(reason);
+        w.cancel();
+        mapper.updateCancel(w, dto);
         WorkOrder response = repo.save(w);
         String user = getCurrentUser();
-        noteService.addNote(response, noteFormatter.cancelled(reason, user), "SYSTEM");
+        noteService.addNote(response, noteFormatter.cancelled(dto.cancelReason(), user), "SYSTEM");
         logService.log(
                 "WORK_ORDER_CANCELLED",
                 "WORK_ORDER",
@@ -130,21 +142,5 @@ public class WorkOrderOrderServiceImpl implements IWorkOrderService {
     @Transactional(readOnly = true)
     public WorkOrder findById(Long id) {
         return repo.findById(id).orElseThrow(() -> new NotFoundException("OS não encontrada."));
-    }
-
-    @Override
-    @Transactional
-    public WorkOrder addNote(Long id, String message) {
-        WorkOrder w = findById(id);
-        WorkOrder response = repo.save(w);
-        String user = getCurrentUser();
-        noteService.addNote(w, noteFormatter.format(message, user), user);
-        logService.log(
-                "WORK_ORDER_NOTE_ADDED",
-                "WORK_ORDER_NOTE",
-                w.getId(),
-                String.format("Nota adicionada por %s (OS #%s)", getCurrentUser(), id)
-        );
-        return response;
     }
 }

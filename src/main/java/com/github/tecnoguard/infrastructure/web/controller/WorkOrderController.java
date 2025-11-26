@@ -389,11 +389,11 @@ public class WorkOrderController {
     @PatchMapping("/assign/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'PLANNER')")
     public ResponseEntity<AssignResponse> assign(
-            @Valid
             @PathVariable Long id,
+            @Valid
             @RequestBody AssignRequest dto) {
 
-        WorkOrder assigned = service.assign(id, dto.tech(), dto.date());
+        WorkOrder assigned = service.assign(id, dto);
         AssignResponse response = mapper.entityToAssignResponse(assigned);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -464,7 +464,6 @@ public class WorkOrderController {
     @PatchMapping("/start/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     public ResponseEntity<StartResponse> start(
-            @Valid
             @PathVariable Long id) {
         WorkOrder started = service.start(id);
         StartResponse response = mapper.entityToStartResponse(started);
@@ -537,10 +536,10 @@ public class WorkOrderController {
     @PatchMapping("/complete/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR', 'TECHNICIAN')")
     public ResponseEntity<CompleteResponse> complete(
-            @Valid
             @PathVariable Long id,
+            @Valid
             @RequestBody CompleteRequest dto) {
-        WorkOrder completed = service.complete(id, dto.log());
+        WorkOrder completed = service.complete(id, dto);
         CompleteResponse response = mapper.entityToCompleteResponse(completed);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -611,10 +610,10 @@ public class WorkOrderController {
     @PatchMapping("/cancel/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR')")
     public ResponseEntity<CancelResponse> cancel(
-            @Valid
             @PathVariable Long id,
+            @Valid
             @RequestBody CancelRequest dto) {
-        WorkOrder cancelled = service.cancel(id, dto.reason());
+        WorkOrder cancelled = service.cancel(id, dto);
         CancelResponse response = mapper.entityToCancelResponse(cancelled);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
