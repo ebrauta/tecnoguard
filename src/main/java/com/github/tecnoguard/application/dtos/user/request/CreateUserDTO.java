@@ -8,6 +8,7 @@ import jakarta.validation.constraints.*;
 
 public record CreateUserDTO(
         @NotBlank(message = "Nome do usuário é obrigatório")
+        @Size(min = 3, message = "O nome do usuário deve ter no mínimo 3 caracteres")
         @Schema(description = "Nome do Usuário", example = "Nome Sobrenome")
         String name,
         @NotBlank(message = "Usuário é obrigatório")
