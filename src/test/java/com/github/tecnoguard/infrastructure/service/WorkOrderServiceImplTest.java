@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import java.util.stream.IntStream;
 
 @SpringBootTest
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional
 class WorkOrderServiceImplTest {

@@ -18,3 +18,7 @@ spring:
   jackson:
     serialization:
       write-dates-as-timestamps: false
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET}

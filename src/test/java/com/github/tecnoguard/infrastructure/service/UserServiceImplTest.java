@@ -5,7 +5,6 @@ import com.github.tecnoguard.core.exceptions.NotFoundException;
 import com.github.tecnoguard.domain.enums.UserRole;
 import com.github.tecnoguard.domain.models.User;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -20,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.stream.IntStream;
 
 @SpringBootTest
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional
 class UserServiceImplTest {
