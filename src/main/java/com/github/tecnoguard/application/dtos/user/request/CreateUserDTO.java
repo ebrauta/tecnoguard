@@ -21,7 +21,7 @@ public record CreateUserDTO(
         @NotNull(message = "Regra é obrigatória")
         @Enumerated(EnumType.STRING)
         @Schema(description = "Permissão do Usuário", example = "TECHNICIAN")
-        UserRole role,
+        UserRole userRole,
         @Email(message = "E-mail inválido")
         @NotBlank(message = "E-mail é obrigatório")
         @Schema(description = "E-mail do Usuário", example = "usuario@mail.com")

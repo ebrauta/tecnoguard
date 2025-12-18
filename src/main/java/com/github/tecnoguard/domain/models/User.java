@@ -33,13 +33,13 @@ public class User extends BaseEntity implements UserDetails {
     private String email;
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")
-    private UserRole role;
+    private UserRole userRole;
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + userRole.name()));
     }
 
     @Override

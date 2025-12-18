@@ -40,14 +40,14 @@ class UserServiceImplTest {
         user.setName("User");
         user.setEmail("user@mail.com");
         user.setUsername("user");
-        user.setRole(UserRole.TECHNICIAN);
+        user.setUserRole(UserRole.TECHNICIAN);
         user.setPassword("123");
 
         user2 = new User();
         user2.setName("User novo");
         user2.setEmail("novo@mail.com");
         user2.setUsername("usernovo");
-        user2.setRole(UserRole.PLANNER);
+        user2.setUserRole(UserRole.PLANNER);
         user2.setPassword("987");
     }
 
@@ -60,7 +60,7 @@ class UserServiceImplTest {
         Assertions.assertEquals("User", u.getName());
         Assertions.assertEquals("user@mail.com", u.getEmail());
         Assertions.assertEquals("user", u.getUsername());
-        Assertions.assertEquals("TECHNICIAN", u.getRole().toString());
+        Assertions.assertEquals("TECHNICIAN", u.getUserRole().toString());
         Assertions.assertTrue(encoder.matches("123", u.getPassword()));
         Assertions.assertTrue(u.isActive());
     }
@@ -74,7 +74,7 @@ class UserServiceImplTest {
 
         Assertions.assertEquals("User novo", updated.getName());
         Assertions.assertEquals("novo@mail.com", updated.getEmail());
-        Assertions.assertEquals("PLANNER", updated.getRole().toString());
+        Assertions.assertEquals("PLANNER", updated.getUserRole().toString());
     }
 
     @Test
@@ -86,7 +86,7 @@ class UserServiceImplTest {
 
         Assertions.assertEquals("User novo", updated.getName());
         Assertions.assertEquals("novo@mail.com", updated.getEmail());
-        Assertions.assertEquals("PLANNER", updated.getRole().toString());
+        Assertions.assertEquals("PLANNER", updated.getUserRole().toString());
     }
 
     @Test
@@ -178,7 +178,7 @@ class UserServiceImplTest {
             u.setEmail("user" + i + "@mail.com");
             u.setUsername("user" + i);
             u.setPassword("123");
-            u.setRole(UserRole.TECHNICIAN);
+            u.setUserRole(UserRole.TECHNICIAN);
             service.create(u);
         });
 

@@ -60,7 +60,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.name").value("User"))
                 .andExpect(jsonPath("$.username").value("user1"))
                 .andExpect(jsonPath("$.email").value("user1@email.com"))
-                .andExpect(jsonPath("$.role").value("TECHNICIAN"))
+                .andExpect(jsonPath("$.userRole").value("TECHNICIAN"))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -110,7 +110,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("User editado"))
                 .andExpect(jsonPath("$.email").value("user1@novo.com"))
-                .andExpect(jsonPath("$.role").value("OPERATOR"));
+                .andExpect(jsonPath("$.userRole").value("OPERATOR"));
     }
 
     @Test

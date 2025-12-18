@@ -17,7 +17,7 @@ public record UserResponseDTO(
         @Schema(description = "E-mail", example = "nome@mail.com")
         String email,
         @Schema(description = "Permissão", example = "OPERATOR")
-        UserRole role,
+        UserRole userRole,
         @Schema(description = "Se usuário está ativo", example = "true")
         Boolean active,
         @Schema(description = "Data de criação", example = "18/12/2025 09:30")

@@ -30,7 +30,7 @@ public class TokenService {
                     .withIssuer("auth-api")
                     .withSubject(user.getUsername())
                     .withExpiresAt(getExpirationTime())
-                    .withClaim("role", user.getRole().name())
+                    .withClaim("role", user.getUserRole().name())
                     .sign(algorithm);
             return token;
         } catch (JWTCreationException e) {

@@ -36,7 +36,7 @@ class AuthenticationManagerTest {
         user.setUsername("admin");
         user.setEmail("admin@mail.com");
         user.setPassword(encoder.encode("1234"));
-        user.setRole(UserRole.ADMIN);
+        user.setUserRole(UserRole.ADMIN);
 
         userRepo.save(user);
     }

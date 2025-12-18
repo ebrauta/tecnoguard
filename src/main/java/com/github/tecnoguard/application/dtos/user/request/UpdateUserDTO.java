@@ -13,5 +13,5 @@ public record UpdateUserDTO(
         @Schema(description = "E-mail atualizado", example = "novoemail@mail.com")
         String email,
         @Schema(description = "Permissão atualizada", example = "OPERATOR")
-        UserRole role) {
+        UserRole userRole) {
 }

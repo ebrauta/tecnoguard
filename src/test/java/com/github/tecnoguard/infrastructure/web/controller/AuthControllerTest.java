@@ -50,7 +50,7 @@ class AuthControllerTest {
         user = new User();
         user.setUsername("joao");
         user.setPassword(encoder.encode("1234"));
-        user.setRole(UserRole.TECHNICIAN);
+        user.setUserRole(UserRole.TECHNICIAN);
         user.setEmail("joao@mail.com");
 
         loginDTO = new LoginDTO("joao", "1234");
