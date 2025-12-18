@@ -1,0 +1,11 @@
+CREATE TABLE tb_workorder_notes (
+    id BIGSERIAL PRIMARY KEY,
+    work_order_id BIGINT NOT NULL REFERENCES tb_workorders (id) ON DELETE CASCADE,
+    message TEXT NOT NULL,
+    author VARCHAR(100),
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by TEXT NOT NULL,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_by TEXT
+);

@@ -1,6 +1,8 @@
+server:
+  port: ${DEV_PORT}
 spring:
   datasource:
-    url: jdbc:h2:mem:tecnoguard_test;DB_CLOSE_DELAY=1;DB_CLOSE_ON_EXIT=FALSE
+    url: ${DB_DEV_URL}
     driverClassName: org.h2.Driver
     username: sa
     password:
@@ -33,4 +35,4 @@ spring:
 api:
   security:
     token:
-      secret: ${JWT_SECRET:my_secret_key}
+      secret: ${JWT_SECRET}

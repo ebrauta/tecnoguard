@@ -1,0 +1,18 @@
+INSERT INTO tb_users (name,
+                      username,
+                      password,
+                      email,
+                      user_role,
+                      active,
+                      created_at,
+                      updated_at,
+                      last_login)
+VALUES ('Administrador',
+        'admin',
+        '$2a$12$xGg0gmgUkCEcCN0qoBtfjum4aNXtS.mR9/iuBVlmZcz1S5d6pmC4q',
+        'admin@mail.com',
+        'ADMIN',
+        TRUE,
+        '2025-10-07 00:00:00'::TIMESTAMP WITHOUT TIME ZONE,
+        '2025-10-07 00:00:00'::TIMESTAMP WITHOUT TIME ZONE,
+        '2025-10-07 00:00:00'::TIMESTAMP WITHOUT TIME ZONE) ON CONFLICT (username) DO NOTHING;
