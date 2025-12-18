@@ -97,7 +97,7 @@ class WorkOrderControllerTest {
                 .andExpect(jsonPath("$.description").value("Trocar motor"))
                 .andExpect(jsonPath("$.equipment").value("Bomba 3"))
                 .andExpect(jsonPath("$.client").value("Cliente X"))
-                .andExpect(jsonPath("$.type").value(WOType.CORRECTIVE.toString()))
+                .andExpect(jsonPath("$.woType").value(WOType.CORRECTIVE.toString()))
                 .andExpect(jsonPath("$.status").value(WOStatus.OPEN.toString()))
                 .andReturn()
                 .getResponse()

@@ -43,14 +43,14 @@ class WorkOrderServiceImplTest {
         order.setDescription("Trocar motor");
         order.setEquipment("Bomba 3");
         order.setClient("Cliente X");
-        order.setType(WOType.CORRECTIVE);
+        order.setWoType(WOType.CORRECTIVE);
         order.setPriority(WOPriority.MEDIUM);
 
         order2 = new WorkOrder();
         order2.setDescription("Trocar eixo");
         order2.setEquipment("Bomba 3");
         order2.setClient("Cliente X");
-        order2.setType(WOType.CORRECTIVE);
+        order2.setWoType(WOType.CORRECTIVE);
         order2.setPriority(WOPriority.MEDIUM);
 
         assignDTO = new AssignRequest("Técnico", LocalDateTime.now().plusDays(1), 1.0, 50.0, false, false, WOMaintenanceTrigger.MANUAL);
@@ -67,7 +67,7 @@ class WorkOrderServiceImplTest {
         Assertions.assertEquals("Trocar motor", created.getDescription());
         Assertions.assertEquals("Bomba 3", created.getEquipment());
         Assertions.assertEquals("Cliente X", created.getClient());
-        Assertions.assertEquals("CORRECTIVE", created.getType().toString());
+        Assertions.assertEquals("CORRECTIVE", created.getWoType().toString());
         Assertions.assertEquals("OPEN", created.getStatus().toString());
 
     }
@@ -151,7 +151,7 @@ class WorkOrderServiceImplTest {
             orderTest.setDescription("OS " + i);
             orderTest.setEquipment("Equipamento " + i);
             orderTest.setClient("Cliente " + i);
-            orderTest.setType(WOType.CORRECTIVE);
+            orderTest.setWoType(WOType.CORRECTIVE);
             orderTest.setPriority(WOPriority.MEDIUM);
             service.create(orderTest);
         });

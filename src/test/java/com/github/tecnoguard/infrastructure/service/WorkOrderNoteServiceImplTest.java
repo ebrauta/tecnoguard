@@ -40,7 +40,7 @@ class WorkOrderNoteServiceImplTest {
         created.setDescription("Trocar motor");
         created.setEquipment("Bomba 3");
         created.setClient("Cliente X");
-        created.setType(WOType.CORRECTIVE);
+        created.setWoType(WOType.CORRECTIVE);
         created.setPriority(WOPriority.MEDIUM);
         created.setEstimatedHours(1.0);
         created.setEstimatedCost(10.0);

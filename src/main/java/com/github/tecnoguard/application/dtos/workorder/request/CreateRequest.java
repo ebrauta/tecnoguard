@@ -17,7 +17,7 @@ public record CreateRequest(
         String client,
         @NotNull(message = "Tipo é obrigatório")
         @Schema(description = "Tipo de manutenção", example = "CORRECTIVE")
-        WOType type,
+        WOType woType,
         @NotNull(message = "Prioridade é obrigatória")
         @Schema(description = "Prioridade do serviço", example = "MEDIUM")
         WOPriority priority

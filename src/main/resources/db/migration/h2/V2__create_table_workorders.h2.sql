@@ -4,7 +4,7 @@ CREATE TABLE tb_workorder (
     equipment VARCHAR(255),
     client VARCHAR(255),
     status VARCHAR(20) NOT NULL,
-    type VARCHAR(20) NOT NULL,
+    workorder_type VARCHAR(20) NOT NULL,
     estimated_hours NUMERIC(10,2),
     actual_hours NUMERIC(10,2),
     estimated_cost NUMERIC(10, 2),
