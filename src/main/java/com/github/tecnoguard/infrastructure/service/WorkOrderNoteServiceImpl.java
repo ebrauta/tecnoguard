@@ -29,7 +29,7 @@ public class WorkOrderNoteServiceImpl implements IWorkOrderNoteService {
 
     @Override
     public WorkOrderNote addNote(WorkOrder wo, String message, String author) {
-        boolean isFinishWO = wo.getStatus() == WOStatus.COMPLETED || wo.getStatus() == WOStatus.CANCELLED;
+        boolean isFinishWO = wo.getWoStatus() == WOStatus.COMPLETED || wo.getWoStatus() == WOStatus.CANCELLED;
         if(!author.equals("SYSTEM") && isFinishWO) throw new BusinessException("Não é possível adicionar notas a OS finalizadas ou canceladas");
         WorkOrderNote note = new WorkOrderNote();
         note.setWorkOrder(wo);

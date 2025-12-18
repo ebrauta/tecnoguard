@@ -27,5 +27,5 @@ public abstract class BaseWOResponse {
     @Schema(description = "Prioridade do serviço", example = "MEDIUM")
     WOPriority woPriority;
     @Schema(description = "Estado do serviço", example = "SCHEDULED")
-    WOStatus status;
+    WOStatus woStatus;
 }

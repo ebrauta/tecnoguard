@@ -99,7 +99,7 @@ class WorkOrderControllerTest {
                 .andExpect(jsonPath("$.client").value("Cliente X"))
                 .andExpect(jsonPath("$.woType").value(WOType.CORRECTIVE.toString()))
                 .andExpect(jsonPath("$.woPriority").value(WOPriority.MEDIUM.toString()))
-                .andExpect(jsonPath("$.status").value(WOStatus.OPEN.toString()))
+                .andExpect(jsonPath("$.woStatus").value(WOStatus.OPEN.toString()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -135,7 +135,7 @@ class WorkOrderControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isNotEmpty())
                 .andExpect(jsonPath("$.content[0].description").value("Trocar motor"))
-                .andExpect(jsonPath("$.content[0].status").value("OPEN"));
+                .andExpect(jsonPath("$.content[0].woStatus").value("OPEN"));
 
     }
 
@@ -165,7 +165,7 @@ class WorkOrderControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.assignedTechnician").value("Técnico 1"))
                 .andExpect(jsonPath("$.scheduledDate").value(LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))))
-                .andExpect(jsonPath("$.status").value("SCHEDULED"));
+                .andExpect(jsonPath("$.woStatus").value("SCHEDULED"));
     }
 
     @Test
@@ -196,7 +196,7 @@ class WorkOrderControllerTest {
         mockMvc.perform(patch("/api/workorders/start/{id}", id)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
+                .andExpect(jsonPath("$.woStatus").value("IN_PROGRESS"));
     }
 
     @Test
@@ -221,7 +221,7 @@ class WorkOrderControllerTest {
                                 .content(mapper.writeValueAsString(completeDTO))
                         /*.with(auth())*/)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("COMPLETED"));
+                .andExpect(jsonPath("$.woStatus").value("COMPLETED"));
     }
 
     @Test
@@ -245,7 +245,7 @@ class WorkOrderControllerTest {
                         .content(mapper.writeValueAsString(cancelDTO))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("CANCELLED"))
+                .andExpect(jsonPath("$.woStatus").value("CANCELLED"))
                 .andExpect(jsonPath("$.cancelReason").value("Equipamento já substituído"));
     }
 

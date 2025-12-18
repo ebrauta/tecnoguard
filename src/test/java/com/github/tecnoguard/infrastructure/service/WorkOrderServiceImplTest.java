@@ -69,7 +69,7 @@ class WorkOrderServiceImplTest {
         Assertions.assertEquals("Cliente X", created.getClient());
         Assertions.assertEquals("CORRECTIVE", created.getWoType().toString());
         Assertions.assertEquals("MEDIUM", created.getWoPriority().toString());
-        Assertions.assertEquals("OPEN", created.getStatus().toString());
+        Assertions.assertEquals("OPEN", created.getWoStatus().toString());
 
     }
 
@@ -80,7 +80,7 @@ class WorkOrderServiceImplTest {
         WorkOrder assigned = service.assign(created.getId(), assignDTO);
 
         Assertions.assertEquals("Técnico", assigned.getAssignedTechnician());
-        Assertions.assertEquals("SCHEDULED", assigned.getStatus().toString());
+        Assertions.assertEquals("SCHEDULED", assigned.getWoStatus().toString());
         Assertions.assertEquals(1.0, assigned.getEstimatedHours());
         Assertions.assertEquals(50.0, assigned.getEstimatedCost());
     }
@@ -92,7 +92,7 @@ class WorkOrderServiceImplTest {
         WorkOrder assigned = service.assign(created.getId(), assignDTO);
         WorkOrder started = service.start(assigned.getId());
 
-        Assertions.assertEquals("IN_PROGRESS", started.getStatus().toString());
+        Assertions.assertEquals("IN_PROGRESS", started.getWoStatus().toString());
     }
 
     @Test
@@ -102,7 +102,7 @@ class WorkOrderServiceImplTest {
         WorkOrder assigned = service.assign(created.getId(), assignDTO);
         WorkOrder started = service.start(assigned.getId());
         WorkOrder completed = service.complete(started.getId(), completeDTO);
-        Assertions.assertEquals("COMPLETED", completed.getStatus().toString());
+        Assertions.assertEquals("COMPLETED", completed.getWoStatus().toString());
         Assertions.assertEquals(2.0, completed.getActualHours());
         Assertions.assertEquals(25.0, completed.getActualCost());
     }
@@ -115,7 +115,7 @@ class WorkOrderServiceImplTest {
         WorkOrder started = service.start(assigned.getId());
         WorkOrder canceled = service.cancel(started.getId(), cancelDTO);
 
-        Assertions.assertEquals("CANCELLED", canceled.getStatus().toString());
+        Assertions.assertEquals("CANCELLED", canceled.getWoStatus().toString());
         Assertions.assertEquals("Cancelada", canceled.getCancelReason());
     }
 

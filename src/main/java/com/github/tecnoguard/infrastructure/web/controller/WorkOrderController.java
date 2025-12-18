@@ -54,7 +54,7 @@ public class WorkOrderController {
     }
 
     private Object typeResponse(WorkOrder wo) {
-        return switch (wo.getStatus()) {
+        return switch (wo.getWoStatus()) {
             case OPEN -> mapper.entityToCreateResponse(wo);
             case SCHEDULED -> mapper.entityToAssignResponse(wo);
             case IN_PROGRESS -> mapper.entityToStartResponse(wo);

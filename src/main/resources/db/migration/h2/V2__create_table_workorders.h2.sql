@@ -1,9 +1,9 @@
-CREATE TABLE tb_workorder (
+CREATE TABLE tb_workorders (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     description TEXT NOT NULL,
     equipment VARCHAR(255),
     client VARCHAR(255),
-    status VARCHAR(20) NOT NULL,
+    workorder_status VARCHAR(20) NOT NULL,
     workorder_type VARCHAR(20) NOT NULL,
     estimated_hours NUMERIC(10,2),
     actual_hours NUMERIC(10,2),

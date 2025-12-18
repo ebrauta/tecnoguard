@@ -8,5 +8,5 @@ CREATE TABLE tb_workorder_notes (
     created_by TEXT,
     updated_at TIMESTAMP,
     updated_by TEXT,
-    FOREIGN KEY (workorder_id) REFERENCES tb_workorder(id)
+    FOREIGN KEY (workorder_id) REFERENCES tb_workorders(id)
 );

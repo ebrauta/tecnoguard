@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "tb_workorder")
+@Table(name = "tb_workorders")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -36,8 +36,8 @@ public class WorkOrder extends AuditableEntity {
     private List<WorkOrderNote> notes = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private WOStatus status;
+    @Column(name = "workorder_status")
+    private WOStatus woStatus;
     @Enumerated(EnumType.STRING)
     @Column(name = "workorder_type")
     private WOType woType;
@@ -74,32 +74,32 @@ public class WorkOrder extends AuditableEntity {
     private WOMaintenanceTrigger trigger = WOMaintenanceTrigger.MANUAL;
 
     public void create() {
-        this.status = WOStatus.OPEN;
+        this.woStatus = WOStatus.OPEN;
         this.openingDate = LocalDateTime.now();
     }
 
     public void assign() {
-        if (this.status != WOStatus.OPEN) throw new BusinessException("Somente OS abertas podem ser agendadas.");
-        this.status = WOStatus.SCHEDULED;
+        if (this.woStatus != WOStatus.OPEN) throw new BusinessException("Somente OS abertas podem ser agendadas.");
+        this.woStatus = WOStatus.SCHEDULED;
     }
 
     public void start() {
-        if (this.status != WOStatus.SCHEDULED) throw new BusinessException("Somente OS agendadas podem ser iniciadas");
-        this.status = WOStatus.IN_PROGRESS;
+        if (this.woStatus != WOStatus.SCHEDULED) throw new BusinessException("Somente OS agendadas podem ser iniciadas");
+        this.woStatus = WOStatus.IN_PROGRESS;
         this.startDate = LocalDateTime.now();
     }
 
     public void complete() {
-        if (this.status != WOStatus.IN_PROGRESS)
+        if (this.woStatus != WOStatus.IN_PROGRESS)
             throw new BusinessException("Somente OS em andamento podem ser concluídas.");
-        this.status = WOStatus.COMPLETED;
+        this.woStatus = WOStatus.COMPLETED;
         this.closingDate = LocalDateTime.now();
     }
 
     public void cancel() {
-        if (this.status == WOStatus.COMPLETED) throw new BusinessException("OS concluídas não podem ser canceladas.");
+        if (this.woStatus == WOStatus.COMPLETED) throw new BusinessException("OS concluídas não podem ser canceladas.");
         this.cancelDate = LocalDateTime.now();
-        this.status = WOStatus.CANCELLED;
+        this.woStatus = WOStatus.CANCELLED;
     }
 }
 
