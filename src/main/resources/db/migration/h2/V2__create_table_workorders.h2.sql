@@ -10,7 +10,7 @@ CREATE TABLE tb_workorder (
     estimated_cost NUMERIC(10, 2),
     actual_cost NUMERIC(10, 2),
     assigned_technician VARCHAR(255),
-    priority VARCHAR(10) NOT NULL,
+    workorder_priority VARCHAR(10) NOT NULL,
     requires_shutdown BOOLEAN,
     safety_risk BOOLEAN,
     maintenance_trigger VARCHAR(20),

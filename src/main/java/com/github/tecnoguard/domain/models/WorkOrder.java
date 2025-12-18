@@ -42,8 +42,8 @@ public class WorkOrder extends AuditableEntity {
     @Column(name = "workorder_type")
     private WOType woType;
     @Enumerated(EnumType.STRING)
-    @Column(name = "priority")
-    private WOPriority priority;
+    @Column(name = "workorder_priority")
+    private WOPriority woPriority;
     @Column(name = "estimated_hours")
     private Double estimatedHours;
     @Column(name = "actual_hours")

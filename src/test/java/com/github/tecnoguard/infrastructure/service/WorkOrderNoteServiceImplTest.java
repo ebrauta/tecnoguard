@@ -41,7 +41,7 @@ class WorkOrderNoteServiceImplTest {
         created.setEquipment("Bomba 3");
         created.setClient("Cliente X");
         created.setWoType(WOType.CORRECTIVE);
-        created.setPriority(WOPriority.MEDIUM);
+        created.setWoPriority(WOPriority.MEDIUM);
         created.setEstimatedHours(1.0);
         created.setEstimatedCost(10.0);
         workOrder = woService.create(created);

@@ -20,6 +20,6 @@ public record CreateRequest(
         WOType woType,
         @NotNull(message = "Prioridade é obrigatória")
         @Schema(description = "Prioridade do serviço", example = "MEDIUM")
-        WOPriority priority
+        WOPriority woPriority
 ) {
 }

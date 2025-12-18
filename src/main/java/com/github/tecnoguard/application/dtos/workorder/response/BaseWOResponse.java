@@ -25,7 +25,7 @@ public abstract class BaseWOResponse {
     @Schema(description = "Tipo de manutenção", example = "CORRECTIVE")
     WOType woType;
     @Schema(description = "Prioridade do serviço", example = "MEDIUM")
-    WOPriority priority;
+    WOPriority woPriority;
     @Schema(description = "Estado do serviço", example = "SCHEDULED")
     WOStatus status;
 }
